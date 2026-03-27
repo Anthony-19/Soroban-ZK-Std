@@ -40,8 +40,8 @@ jobs:
 
       - name: 🧪 Run Miri (Memory Safety Audit)
         run: |
-          rustup component add miri
-          cargo miri test
+          rustup toolchain install nightly --component miri
+          cargo +nightly miri test
       - name: 🛡️ Audit Dependencies (cargo-deny)
         uses: EmbarkStudios/cargo-deny-action@v1
 
