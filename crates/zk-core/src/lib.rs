@@ -533,6 +533,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_g1_scalar_mul() {
         // Generator point (roughly G_x, G_y for BN254)
         // Note: For testing, any valid point works.
@@ -558,6 +559,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_g1_msm() {
         let p = G1Affine {
             x: u256::from(1u8),
@@ -578,6 +580,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_g1_msm_identity() {
         let p = G1Affine {
             x: u256::from(1u8),
@@ -590,6 +593,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_invert() {
         // invert(2)
         let a = u256::from(2u8);
@@ -614,6 +618,7 @@ mod tests {
         assert_eq!(prod, u256::from(1u8));
     }
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_g1_msm_mismatched_lengths() {
         let p = G1Affine {
             x: u256::from(1u8),
