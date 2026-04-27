@@ -74,12 +74,12 @@ impl Bn254 {
     /// BN254 scalar field modulus r (order of G1/G2).
     pub const BASE_MODULUS: ethnum::u256 = ethnum::u256::from_words(
         0x30644e72e131a029b85045b68181585d_u128,
-        0x2833e84879b9709142e1f593f0000001_u128,
+        0x2833e84879b9709143e1f593f0000001_u128,
     );
     /// Alias for BASE_MODULUS — used by the Legendre check functions.
     pub const FR_MODULUS: ethnum::u256 = ethnum::u256::from_words(
         0x30644e72e131a029b85045b68181585d_u128,
-        0x2833e84879b9709142e1f593f0000001_u128,
+        0x2833e84879b9709143e1f593f0000001_u128,
     );
 
     /// BN254 base field modulus p (coordinate field of the curve).
@@ -161,71 +161,31 @@ impl Bn254 {
     }
 
     /// Modular Multiplication: (a * b) % modulus
-    /// Implements manual 512-bit long multiplication to bypass library limitations.
+    /// Uses double-and-add to avoid 512-bit intermediate products.
     #[inline(always)]
     fn mul_mod(a: u256, b: u256, modulus: u256) -> u256 {
-        if a == 0 || b == 0 {
-            return u256::from(0u8);
+        let mut result = u256::from(0u8);
+        let mut a = a % modulus;
+        let mut b = b % modulus;
+        while b > 0 {
+            if b & u256::from(1u8) != u256::from(0u8) {
+                result = Self::add_mod(result, a, modulus);
+            }
+            a = Self::add_mod(a, a, modulus);
+            b >>= 1;
         }
-
-        // Split a and b into 128-bit halves
-        let a_low = u256::from(a.as_u128());
-        let a_high = a >> 128;
-        let b_low = u256::from(b.as_u128());
-        let b_high = b >> 128;
-
-        // Schoolbook multiplication (a_hi*2^128 + a_lo) * (b_hi*2^128 + b_lo)
-        // This yields 4 partial products
-        let p0 = a_low * b_low;
-        let p1 = a_low * b_high;
-        let p2 = a_high * b_low;
-        let p3 = a_high * b_high;
-
-        // Perform modular reduction on each partial product stage
-        // to keep everything within 256-bit bounds.
-        let mut res = p0;
-        while res >= modulus {
-            res -= modulus;
-        }
-
-        // Handle p1 and p2 (shifted by 128 bits)
-        let mut p1_red = p1;
-        while p1_red >= modulus {
-            p1_red -= modulus;
-        }
-        let mut p2_red = p2;
-        while p2_red >= modulus {
-            p2_red -= modulus;
-        }
-
-        let mut p1_p2 = Self::add_mod(p1_red, p2_red, modulus);
-        for _ in 0..128 {
-            p1_p2 = Self::add_mod(p1_p2, p1_p2, modulus); // Modular doubling
-        }
-        res = Self::add_mod(res, p1_p2, modulus);
-
-        // Handle p3 (shifted by 256 bits)
-        let mut p3_red = p3;
-        while p3_red >= modulus {
-            p3_red -= modulus;
-        }
-        for _ in 0..256 {
-            p3_red = Self::add_mod(p3_red, p3_red, modulus); // Modular doubling
-        }
-        res = Self::add_mod(res, p3_red, modulus);
-
-        res
+        result
     }
 
     #[inline(always)]
     fn pow_mod(mut base: u256, mut exp: u256, modulus: u256) -> u256 {
         let mut res = u256::from(1u8);
         while exp > 0 {
-            if exp % 2 == 1 {
+            if exp & u256::from(1u8) != u256::from(0u8) {
                 res = Self::mul_mod(res, base, modulus);
             }
             base = Self::mul_mod(base, base, modulus);
-            exp /= 2;
+            exp >>= 1;
         }
         res
     }
@@ -254,6 +214,33 @@ impl Bn254 {
         }
         let exponent = Self::FR_MODULUS - u256::from(2u8);
         Self::pow(a, exponent)
+    }
+
+    // ── Public Fq (base field) arithmetic ────────────────────────────────────
+
+    pub fn mul_fq(a: u256, b: u256) -> u256 {
+        Self::mul_mod(a, b, Self::FQ_MODULUS)
+    }
+
+    pub fn add_fq(a: u256, b: u256) -> u256 {
+        Self::add_mod(a, b, Self::FQ_MODULUS)
+    }
+
+    pub fn sub_fq(a: u256, b: u256) -> u256 {
+        let (res, underflow) = a.overflowing_sub(b);
+        if underflow {
+            res.wrapping_add(Self::FQ_MODULUS)
+        } else {
+            res
+        }
+    }
+
+    pub fn invert_fq(a: u256) -> u256 {
+        if a == 0 {
+            return u256::from(0u8);
+        }
+        let exponent = Self::FQ_MODULUS - u256::from(2u8);
+        Self::pow_mod(a, exponent, Self::FQ_MODULUS)
     }
 
     pub fn is_valid_g1(x: u256, y: u256) -> bool {
@@ -455,13 +442,13 @@ impl G1Jacobian {
             return G1Affine::IDENTITY;
         }
 
-        let z_inv = Bn254::invert(self.z);
-        let z_inv2 = Bn254::mul(z_inv, z_inv);
-        let z_inv3 = Bn254::mul(z_inv2, z_inv);
+        let z_inv = Bn254::invert_fq(self.z);
+        let z_inv2 = Bn254::mul_fq(z_inv, z_inv);
+        let z_inv3 = Bn254::mul_fq(z_inv2, z_inv);
 
         G1Affine {
-            x: Bn254::mul(self.x, z_inv2),
-            y: Bn254::mul(self.y, z_inv3),
+            x: Bn254::mul_fq(self.x, z_inv2),
+            y: Bn254::mul_fq(self.y, z_inv3),
         }
     }
 
@@ -480,34 +467,34 @@ impl G1Jacobian {
         // Y' = M * (S - X') - 8 * Y^4
         // Z' = 2 * Y * Z
 
-        let x_sq = Bn254::mul(self.x, self.x);
-        let y_sq = Bn254::mul(self.y, self.y);
-        let y_sq_sq = Bn254::mul(y_sq, y_sq);
+        let x_sq = Bn254::mul_fq(self.x, self.x);
+        let y_sq = Bn254::mul_fq(self.y, self.y);
+        let y_sq_sq = Bn254::mul_fq(y_sq, y_sq);
 
         // S = 4 * X * Y^2
-        let mut s = Bn254::mul(self.x, y_sq);
-        s = Bn254::add(s, s);
-        s = Bn254::add(s, s);
+        let mut s = Bn254::mul_fq(self.x, y_sq);
+        s = Bn254::add_fq(s, s);
+        s = Bn254::add_fq(s, s);
 
         // M = 3 * X^2
-        let mut m = Bn254::add(x_sq, x_sq);
-        m = Bn254::add(m, x_sq);
+        let mut m = Bn254::add_fq(x_sq, x_sq);
+        m = Bn254::add_fq(m, x_sq);
 
         // X' = M^2 - 2 * S
-        let m_sq = Bn254::mul(m, m);
-        let s2 = Bn254::add(s, s);
-        let x_res = Bn254::sub(m_sq, s2);
+        let m_sq = Bn254::mul_fq(m, m);
+        let s2 = Bn254::add_fq(s, s);
+        let x_res = Bn254::sub_fq(m_sq, s2);
 
         // Y' = M * (S - X') - 8 * Y^4
-        let s_minus_x = Bn254::sub(s, x_res);
-        let m_times_s_minus_x = Bn254::mul(m, s_minus_x);
-        let mut y4_8 = Bn254::add(y_sq_sq, y_sq_sq);
-        y4_8 = Bn254::add(y4_8, y4_8);
-        y4_8 = Bn254::add(y4_8, y4_8);
-        let y_res = Bn254::sub(m_times_s_minus_x, y4_8);
+        let s_minus_x = Bn254::sub_fq(s, x_res);
+        let m_times_s_minus_x = Bn254::mul_fq(m, s_minus_x);
+        let mut y4_8 = Bn254::add_fq(y_sq_sq, y_sq_sq);
+        y4_8 = Bn254::add_fq(y4_8, y4_8);
+        y4_8 = Bn254::add_fq(y4_8, y4_8);
+        let y_res = Bn254::sub_fq(m_times_s_minus_x, y4_8);
 
         // Z' = 2 * Y * Z
-        let z_res = Bn254::add(Bn254::mul(self.y, self.z), Bn254::mul(self.y, self.z));
+        let z_res = Bn254::add_fq(Bn254::mul_fq(self.y, self.z), Bn254::mul_fq(self.y, self.z));
 
         Self {
             x: x_res,
@@ -533,12 +520,12 @@ impl G1Jacobian {
         // Y3 = R * (U1 * H^2 - X3) - S1 * H^3
         // Z3 = H * Z1
 
-        let z1_sq = Bn254::mul(self.z, self.z);
-        let z1_cb = Bn254::mul(z1_sq, self.z);
+        let z1_sq = Bn254::mul_fq(self.z, self.z);
+        let z1_cb = Bn254::mul_fq(z1_sq, self.z);
 
         // U2 = X2 * Z1^2, S2 = Y2 * Z1^3
-        let u2 = Bn254::mul(other.x, z1_sq);
-        let s2 = Bn254::mul(other.y, z1_cb);
+        let u2 = Bn254::mul_fq(other.x, z1_sq);
+        let s2 = Bn254::mul_fq(other.y, z1_cb);
 
         // H = U2 - U1, R = S2 - S1
         if self.x == u2 {
@@ -549,27 +536,27 @@ impl G1Jacobian {
             }
         }
 
-        let h = Bn254::sub(u2, self.x);
-        let r = Bn254::sub(s2, self.y);
+        let h = Bn254::sub_fq(u2, self.x);
+        let r = Bn254::sub_fq(s2, self.y);
 
-        let h_sq = Bn254::mul(h, h);
-        let h_cb = Bn254::mul(h_sq, h);
+        let h_sq = Bn254::mul_fq(h, h);
+        let h_cb = Bn254::mul_fq(h_sq, h);
 
         // X3 = R^2 - H^3 - 2 * U1 * H^2
-        let r_sq = Bn254::mul(r, r);
-        let u1_h2 = Bn254::mul(self.x, h_sq);
-        let u1_h2_2 = Bn254::add(u1_h2, u1_h2);
-        let mut x_res = Bn254::sub(r_sq, h_cb);
-        x_res = Bn254::sub(x_res, u1_h2_2);
+        let r_sq = Bn254::mul_fq(r, r);
+        let u1_h2 = Bn254::mul_fq(self.x, h_sq);
+        let u1_h2_2 = Bn254::add_fq(u1_h2, u1_h2);
+        let mut x_res = Bn254::sub_fq(r_sq, h_cb);
+        x_res = Bn254::sub_fq(x_res, u1_h2_2);
 
         // Y3 = R * (U1 * H^2 - X3) - S1 * H^3
-        let u1_h2_minus_x3 = Bn254::sub(u1_h2, x_res);
-        let r_times_diff = Bn254::mul(r, u1_h2_minus_x3);
-        let s1_h3 = Bn254::mul(self.y, h_cb);
-        let y_res = Bn254::sub(r_times_diff, s1_h3);
+        let u1_h2_minus_x3 = Bn254::sub_fq(u1_h2, x_res);
+        let r_times_diff = Bn254::mul_fq(r, u1_h2_minus_x3);
+        let s1_h3 = Bn254::mul_fq(self.y, h_cb);
+        let y_res = Bn254::sub_fq(r_times_diff, s1_h3);
 
         // Z3 = H * Z1
-        let z_res = Bn254::mul(h, self.z);
+        let z_res = Bn254::mul_fq(h, self.z);
 
         Self {
             x: x_res,
@@ -588,15 +575,15 @@ impl G1Jacobian {
             return *self;
         }
 
-        let z1_sq = Bn254::mul(self.z, self.z);
-        let z2_sq = Bn254::mul(other.z, other.z);
-        let z1_cb = Bn254::mul(z1_sq, self.z);
-        let z2_cb = Bn254::mul(z2_sq, other.z);
+        let z1_sq = Bn254::mul_fq(self.z, self.z);
+        let z2_sq = Bn254::mul_fq(other.z, other.z);
+        let z1_cb = Bn254::mul_fq(z1_sq, self.z);
+        let z2_cb = Bn254::mul_fq(z2_sq, other.z);
 
-        let u1 = Bn254::mul(self.x, z2_sq);
-        let u2 = Bn254::mul(other.x, z1_sq);
-        let s1 = Bn254::mul(self.y, z2_cb);
-        let s2 = Bn254::mul(other.y, z1_cb);
+        let u1 = Bn254::mul_fq(self.x, z2_sq);
+        let u2 = Bn254::mul_fq(other.x, z1_sq);
+        let s1 = Bn254::mul_fq(self.y, z2_cb);
+        let s2 = Bn254::mul_fq(other.y, z1_cb);
 
         if u1 == u2 {
             if s1 == s2 {
@@ -606,25 +593,25 @@ impl G1Jacobian {
             }
         }
 
-        let h = Bn254::sub(u2, u1);
-        let r = Bn254::sub(s2, s1);
+        let h = Bn254::sub_fq(u2, u1);
+        let r = Bn254::sub_fq(s2, s1);
 
-        let h_sq = Bn254::mul(h, h);
-        let h_cb = Bn254::mul(h_sq, h);
+        let h_sq = Bn254::mul_fq(h, h);
+        let h_cb = Bn254::mul_fq(h_sq, h);
 
-        let r_sq = Bn254::mul(r, r);
-        let u1_h2 = Bn254::mul(u1, h_sq);
-        let u1_h2_2 = Bn254::add(u1_h2, u1_h2);
+        let r_sq = Bn254::mul_fq(r, r);
+        let u1_h2 = Bn254::mul_fq(u1, h_sq);
+        let u1_h2_2 = Bn254::add_fq(u1_h2, u1_h2);
 
-        let mut x_res = Bn254::sub(r_sq, h_cb);
-        x_res = Bn254::sub(x_res, u1_h2_2);
+        let mut x_res = Bn254::sub_fq(r_sq, h_cb);
+        x_res = Bn254::sub_fq(x_res, u1_h2_2);
 
-        let u1_h2_minus_x3 = Bn254::sub(u1_h2, x_res);
-        let r_times_diff = Bn254::mul(r, u1_h2_minus_x3);
-        let s1_h3 = Bn254::mul(s1, h_cb);
-        let y_res = Bn254::sub(r_times_diff, s1_h3);
+        let u1_h2_minus_x3 = Bn254::sub_fq(u1_h2, x_res);
+        let r_times_diff = Bn254::mul_fq(r, u1_h2_minus_x3);
+        let s1_h3 = Bn254::mul_fq(s1, h_cb);
+        let y_res = Bn254::sub_fq(r_times_diff, s1_h3);
 
-        let z_res = Bn254::mul(Bn254::mul(h, self.z), other.z);
+        let z_res = Bn254::mul_fq(Bn254::mul_fq(h, self.z), other.z);
 
         Self {
             x: x_res,
@@ -1044,6 +1031,15 @@ mod tests {
     }
 
     // ── Constant sanity checks ────────────────────────────────────────────────
+
+    #[test]
+    fn debug_print_fr_modulus() {
+        extern crate std;
+        std::println!("FR_MODULUS = {:?}", Bn254::FR_MODULUS);
+        std::println!("BASE_MODULUS = {:?}", Bn254::BASE_MODULUS);
+        std::println!("FR_MODULUS hi = {:032x}", Bn254::FR_MODULUS >> 128);
+        std::println!("FR_MODULUS lo = {:032x}", Bn254::FR_MODULUS & ethnum::u256::from_words(0u128, u128::MAX));
+    }
 
     #[test]
     fn legendre_exp_fr_is_half_of_r_minus_one() {
