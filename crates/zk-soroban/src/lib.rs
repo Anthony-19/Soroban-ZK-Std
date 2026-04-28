@@ -1,4 +1,6 @@
 #![no_std]
+pub mod poseidon2;
+
 use ethnum::u256 as eth_u256;
 use soroban_sdk::{Env, U256};
 use zk_core::{Bn254, Fr, SafeFrom, ZkError};
