@@ -9,6 +9,11 @@ impl Bn254 {
         0x97816a916871ca8d3c208c16d87cfd47_u128, // low 128 bits  (last 16 bytes)
     );
 
+    pub const SCALAR_ORDER: ethnum::u256 = ethnum::u256::from_words(
+        0x30644e72e131a029b85045b68181585d_u128,
+        0x2833e84879b9709143e1f593f0000001_u128,
+    );
+
     // pub const BASE_MODULUS: u256 = u256::from_words(
     //     0x30644e72e131a029b85045b68181585d,
     //     0x97816a916871ca8d3c208c16d87cfd47,
@@ -102,5 +107,69 @@ impl Bn254 {
         let rhs = Self::add(x_cb, u256::from(3u8));
 
         y_sq == rhs
+    }
+
+    pub fn g1_scalar_mul(point: G1Projective, scalar: u256) -> G1Projective {
+        // handle edge cases
+        if scalar == 0 {
+            return G1Projective::identity();
+        }
+        if scalar == 1 {
+            return point;
+        }
+
+        let mut result = G1Projective::identity();
+
+        // BN254 scalar field is ~254 bits. Loop 254 times for constant-time.
+        for i in (0..254).rev() {
+            // double the current result
+            result = result.double();
+
+            // always compute addition
+            let added = result.add(&point);
+
+            // extract the i-th of the scalar
+            let bit = (scalar >> i) & 1u128;
+
+            // constant time select: replaces if bit == 1 {result = added}
+            // this ensure the same branch/instruction path is taken
+            result = G1Projective::cf_select(bit == 1u128, added, result);
+        }
+
+        result
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct G1Projective {
+    pub x: u256,
+    pub y: u256,
+    pub z: u256,
+}
+
+impl G1Projective {
+    pub fn identity() -> Self {
+        Self {
+            x: u256::from(1u8),
+            y: u256::from(1u8),
+            z: u256::from(0u8),
+        }
+    }
+
+    /// contant time seletion: return 'a' if choice is true, 'b' if choice is false
+    pub fn cf_select(choice: bool, a: Self, b: Self) -> Self {
+        if choice {
+            a
+        } else {
+            b
+        }
+    }
+
+    // you will need to implement these based on standard projective formulas
+    pub fn double(&self) -> Self {
+        todo!()
+    }
+    pub fn add(&self, other: &Self) -> Self {
+        todo!()
     }
 }
