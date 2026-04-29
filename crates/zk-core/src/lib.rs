@@ -628,7 +628,7 @@ impl G1Affine {
         }
         Self {
             x: self.x,
-            y: Bn254::sub(u256::ZERO, self.y),
+            y: Bn254::sub_fq(u256::ZERO, self.y),
         }
     }
 }
@@ -907,11 +907,16 @@ mod tests {
     // ── legendre_fr ───────────────────────────────────────────────────────────
 
     #[test]
-    #[test]
     fn fr_and_fq_have_independent_bounds() {
+        // FQ_MODULUS is not a valid Fq element (out of range)
         let p_as_bytes = Bn254::fq_to_bytes(Bn254::FQ_MODULUS);
         assert_eq!(Bn254::fq_from_bytes(p_as_bytes), None);
-        assert_eq!(Bn254::fr_from_bytes(p_as_bytes), Some(Bn254::FQ_MODULUS));
+        // FQ_MODULUS > FR_MODULUS numerically, so it is also out of range for Fr
+        assert_eq!(Bn254::fr_from_bytes(p_as_bytes), None);
+        // FR_MODULUS is not a valid Fr element, but IS a valid Fq element (FR < FQ)
+        let r_as_bytes = Bn254::fr_to_bytes(Bn254::FR_MODULUS);
+        assert_eq!(Bn254::fr_from_bytes(r_as_bytes), None);
+        assert_eq!(Bn254::fq_from_bytes(r_as_bytes), Some(Bn254::FR_MODULUS));
     }
 
     // ── ElGamal ───────────────────────────────────────────────────────────────
@@ -1031,15 +1036,6 @@ mod tests {
     }
 
     // ── Constant sanity checks ────────────────────────────────────────────────
-
-    #[test]
-    fn debug_print_fr_modulus() {
-        extern crate std;
-        std::println!("FR_MODULUS = {:?}", Bn254::FR_MODULUS);
-        std::println!("BASE_MODULUS = {:?}", Bn254::BASE_MODULUS);
-        std::println!("FR_MODULUS hi = {:032x}", Bn254::FR_MODULUS >> 128);
-        std::println!("FR_MODULUS lo = {:032x}", Bn254::FR_MODULUS & ethnum::u256::from_words(0u128, u128::MAX));
-    }
 
     #[test]
     fn legendre_exp_fr_is_half_of_r_minus_one() {
