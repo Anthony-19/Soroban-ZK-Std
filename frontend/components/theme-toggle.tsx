@@ -5,26 +5,30 @@ import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 export function ThemeToggle() {
-    const { theme, setTheme } = useTheme()
+    // Pull in 'resolvedTheme' to handle the 'system' default state correctly
+    const { setTheme, resolvedTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
 
-    // Ensure component is mounted on the client before rendering the toggle icon
+    // Ensure component is mounted on the client to prevent hydration mismatch (FOUC)
     React.useEffect(() => {
         setMounted(true)
     }, [])
 
     if (!mounted) {
-        // Return a transparent placeholder of the exact same size to prevent layout shift
-        return <div className="w-9 h-9 rounded-full border-2 border-transparent" />
+        // A transparent placeholder that perfectly holds the layout space while loading
+        return <div className="w-9 h-9 rounded-full border border-transparent" />
     }
+
+    // Determine if we are currently in dark mode (resolves system preferences too)
+    const isDark = resolvedTheme === "dark"
 
     return (
         <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-black dark:border-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors focus:outline-none"
             aria-label="Toggle theme"
         >
-            {theme === "dark" ? (
+            {isDark ? (
                 <Sun className="h-4 w-4 text-white" />
             ) : (
                 <Moon className="h-4 w-4 text-black" />
