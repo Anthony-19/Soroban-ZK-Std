@@ -27,9 +27,9 @@ impl G2Affine {
     /// All 32-byte chunks are encoded in Big-Endian format.
     pub fn to_bytes(&self) -> [u8; 128] {
         let mut bytes = [0u8; 128];
-        bytes[0..32].copy_from_slice(&self.x.1.to_be_bytes());   // X c1
-        bytes[32..64].copy_from_slice(&self.x.0.to_be_bytes());  // X c0
-        bytes[64..96].copy_from_slice(&self.y.1.to_be_bytes());  // Y c1
+        bytes[0..32].copy_from_slice(&self.x.1.to_be_bytes()); // X c1
+        bytes[32..64].copy_from_slice(&self.x.0.to_be_bytes()); // X c0
+        bytes[64..96].copy_from_slice(&self.y.1.to_be_bytes()); // Y c1
         bytes[96..128].copy_from_slice(&self.y.0.to_be_bytes()); // Y c0
         bytes
     }
@@ -140,7 +140,13 @@ mod tests {
     #[test]
     fn test_pairing_g1_neg_g1_same_g2_equals_one() {
         let env = Env::default();
-        let result = pairing_check(&env, &[(g1_generator(), g2_generator()), (g1_generator_neg(), g2_generator())]);
+        let result = pairing_check(
+            &env,
+            &[
+                (g1_generator(), g2_generator()),
+                (g1_generator_neg(), g2_generator()),
+            ],
+        );
         assert!(result.unwrap(), "e(G1, G2) * e(-G1, G2) should equal 1");
     }
 
