@@ -3,8 +3,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+<<<<<<< version-selector-keyboard-nav
 import { VersionSelector } from "./version-selector/VersionSelector";
 import { useDocVersion } from "../hooks/useDocVersion";
+=======
+>>>>>>> main
 
 interface NavItem {
   title: string;
