@@ -25,8 +25,8 @@ While Protocol 25 ("X-Ray") introduced native host functions for BN254 pairing c
 
 ## Public Good Impact & Use Cases
 This is foundational infrastructure for the Stellar ecosystem. It empowers developers to build:
-- **Shielded RWA Transfers**: Private tokenized assets that maintain regulatory visibility.
-- **Configurable Privacy**: Selective disclosure for institutional payments.
+- **Shielded RWA Transfers**: Private tokenized assets that maintain regulatory visibility via ElGamal Viewing Keys (see our [Shielded Asset Template](./contracts/shielded-asset-template)).
+- **Configurable Privacy**: Integration with [Association Set Providers (ASPs)](./docs/ASP_Integration.md) for compliance.
 - **Trustless Governance**: ZK-Voting and anonymous contribution tracking for Stellar-native DAOs.
 
 ## Installation
@@ -38,6 +38,9 @@ zk-soroban = { git = "[https://github.com/georgegoldman/Soroban-ZK-Std](https://
 
 ## 🛠️ Contributing to Soroban-ZK-Std
 Soroban-ZK-Std is a high-performance, no_std cryptographic library optimized specifically for the Stellar network. Because we operate within the strict limits of the Soroban Virtual Machine, our contribution standards are higher than standard Rust projects.
+
+💬 Community
+Join our Telegram group to collaborate with other contributors and get real-time support: https://t.me/+beBHvsplOPVmYmM0
 
 ### 🚀 Getting Started
 1. **Prerequisites**
