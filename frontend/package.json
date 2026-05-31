@@ -11,6 +11,9 @@
     "generate-api-docs": "node scripts/generate-api-docs.mjs"
   },
   "dependencies": {
+    "@docsearch/css": "^4.6.3",
+    "@docsearch/react": "^4.6.3",
+    "@next/mdx": "^14.2.3",
     "katex": "^0.17.0",
     "lucide-react": "^1.16.0",
     "next": "14.2.3",
@@ -23,7 +26,10 @@
     "shiki": "^1.6.0"
   },
   "devDependencies": {
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
     "@types/katex": "^0.16.8",
+    "@types/mdx": "^2.0.13",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
