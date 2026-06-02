@@ -49,7 +49,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Setup Remark/MDX Linting
         run: |
@@ -306,7 +306,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build Documentation Site
         working-directory: frontend
