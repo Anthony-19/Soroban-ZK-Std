@@ -6,8 +6,7 @@ import Link from "next/link";
 import { VersionSelector } from "./version-selector/VersionSelector";
 import { useDocVersion } from "../hooks/useDocVersion";
 
-import { navigation, type NavItem } from "@/lib/navigation";
-
+// NavItem and the navigation tree are defined locally below; no import needed.
 
 interface NavItem {
   title: string;
