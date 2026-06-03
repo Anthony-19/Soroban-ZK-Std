@@ -1,7 +1,5 @@
 {
-
-  "generated_at": "2026-05-30T22:51:32.320Z",
-
+  "generated_at": "2026-06-02T10:44:59.006Z",
   "version": "1.0.0",
   "crates": [
     {
@@ -149,6 +147,12 @@
         },
         {
           "kind": "fn",
+          "name": "is_valid_fq",
+          "doc": "Validates a BN254 base field element in Fq.  This ensures the element is within the field modulus and prevents malformed G2 coordinate components from being passed into the native host pairing call.",
+          "signature": "pub fn is_valid_fq(val: u256) -> bool"
+        },
+        {
+          "kind": "fn",
           "name": "add",
           "doc": "",
           "signature": "pub fn add(a: u256, b: u256) -> u256"
@@ -203,6 +207,12 @@
         },
         {
           "kind": "fn",
+          "name": "is_valid_g1_subgroup",
+          "doc": "",
+          "signature": "pub fn is_valid_g1_subgroup(x: u256, y: u256) -> bool"
+        },
+        {
+          "kind": "fn",
           "name": "g1_scalar_mul",
           "doc": "",
           "signature": "pub fn g1_scalar_mul(point: G1Projective, scalar: u256) -> G1Projective"
@@ -221,6 +231,12 @@
         },
         {
           "kind": "fn",
+          "name": "is_identity",
+          "doc": "",
+          "signature": "pub fn is_identity(&self) -> bool"
+        },
+        {
+          "kind": "fn",
           "name": "ct_select",
           "doc": "",
           "signature": "pub fn ct_select(choice: u128, a: Self, b: Self) -> Self"
@@ -230,6 +246,78 @@
           "name": "double",
           "doc": "Doubles the projective point (2 * P) using Jacobian formulas.",
           "signature": "pub fn double(&self) -> Self"
+        },
+        {
+          "kind": "struct",
+          "name": "DensePolynomial",
+          "doc": "",
+          "signature": "pub struct DensePolynomial<const MAX_COEFFS: usize>"
+        },
+        {
+          "kind": "struct",
+          "name": "SparsePolynomial",
+          "doc": "",
+          "signature": "pub struct SparsePolynomial<const MAX_TERMS: usize>"
+        },
+        {
+          "kind": "fn",
+          "name": "from_coefficients_slice",
+          "doc": "",
+          "signature": "pub fn from_coefficients_slice(coeffs: &[u256]) -> Result<Self, ZkError>"
+        },
+        {
+          "kind": "fn",
+          "name": "zero",
+          "doc": "",
+          "signature": "pub fn zero() -> Self"
+        },
+        {
+          "kind": "fn",
+          "name": "one",
+          "doc": "",
+          "signature": "pub fn one() -> Self"
+        },
+        {
+          "kind": "fn",
+          "name": "is_zero",
+          "doc": "",
+          "signature": "pub fn is_zero(&self) -> bool"
+        },
+        {
+          "kind": "fn",
+          "name": "degree",
+          "doc": "",
+          "signature": "pub fn degree(&self) -> usize"
+        },
+        {
+          "kind": "fn",
+          "name": "coeffs",
+          "doc": "",
+          "signature": "pub fn coeffs(&self) -> &[u256]"
+        },
+        {
+          "kind": "fn",
+          "name": "evaluate",
+          "doc": "",
+          "signature": "pub fn evaluate(&self, x: u256) -> u256"
+        },
+        {
+          "kind": "fn",
+          "name": "try_mul",
+          "doc": "",
+          "signature": "pub fn try_mul(&self, other: &Self) -> Result<Self, ZkError>"
+        },
+        {
+          "kind": "fn",
+          "name": "from_terms_slice",
+          "doc": "",
+          "signature": "pub fn from_terms_slice(terms: &[(usize, u256)]) -> Result<Self, ZkError>"
+        },
+        {
+          "kind": "fn",
+          "name": "terms",
+          "doc": "",
+          "signature": "pub fn terms(&self) -> &[(usize, u256)]"
         }
       ]
     },
@@ -321,6 +409,18 @@
           "name": "hash_to_field",
           "doc": "Hash a slice of BN254 Fr field elements to a single field element.  Compatible with Noir/Circom Poseidon2 constraints (t=3, d=5, rate=2). Uses capacity-zero sponge initialisation.",
           "signature": "pub fn hash_to_field(env: &Env, inputs: &[U256]) -> U256"
+        },
+        {
+          "kind": "struct",
+          "name": "Transcript",
+          "doc": "Fiat-Shamir transcript built on top of the BN254 Poseidon2 sponge.  The transcript is stateful: each absorb updates the sponge state, and each squeeze advances the permutation before producing the next challenge.",
+          "signature": "pub struct Transcript"
+        },
+        {
+          "kind": "fn",
+          "name": "squeeze_challenge",
+          "doc": "Squeeze the next Fiat-Shamir challenge as a validated BN254 `Fr`.",
+          "signature": "pub fn squeeze_challenge(&mut self) -> Result<Fr, ZkError>"
         }
       ]
     }
