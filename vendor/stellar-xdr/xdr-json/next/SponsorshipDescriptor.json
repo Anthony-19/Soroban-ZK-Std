@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "SponsorshipDescriptor",
+  "description": "SponsorshipDescriptor is an XDR Typedef defined as:\n\n```text typedef AccountID* SponsorshipDescriptor; ```",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/AccountId"
+    },
+    {
+      "type": "null"
+    }
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "unevaluatedProperties": false,
+  "definitions": {
+    "AccountId": {
+      "type": "string"
+    }
+  }
+}
