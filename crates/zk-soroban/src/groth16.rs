@@ -1,6 +1,6 @@
 use ethnum::u256;
 use soroban_sdk::crypto::bn254::{Bn254Fr as SdkFr, Bn254G1Affine as SdkG1Affine};
-use soroban_sdk::{Bytes, BytesN, Env, U256, Vec};
+use soroban_sdk::{Bytes, BytesN, Env, Vec, U256};
 use zk_core::{Bn254, G1Affine, ZkError};
 
 use crate::pairing::{g1_to_bytes, pairing_check, G2Affine};
@@ -183,10 +183,14 @@ mod tests {
     }
 
     impl ConstraintSynthesizer<ArkFr> for SquareCircuit {
-        fn generate_constraints(self, cs: ConstraintSystemRef<ArkFr>) -> Result<(), SynthesisError> {
+        fn generate_constraints(
+            self,
+            cs: ConstraintSystemRef<ArkFr>,
+        ) -> Result<(), SynthesisError> {
             let x = cs.new_witness_variable(|| self.x.ok_or(SynthesisError::AssignmentMissing))?;
-            let square = cs
-                .new_input_variable(|| self.public_square.ok_or(SynthesisError::AssignmentMissing))?;
+            let square = cs.new_input_variable(|| {
+                self.public_square.ok_or(SynthesisError::AssignmentMissing)
+            })?;
 
             cs.enforce_r1cs_constraint(
                 || LinearCombination::from(x),
