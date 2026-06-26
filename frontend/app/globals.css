@@ -141,3 +141,10 @@
 .docsearch-container .DocSearch-Button-Keys {
   margin-left: auto;
 }
+
+/* Fix KaTeX display blocks overflowing on small screens or inside max-width containers */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}

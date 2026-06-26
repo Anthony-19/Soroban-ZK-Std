@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const SITE_URL =
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     // suppressHydrationWarning is required by next-themes on the html tag
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"

@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation';
 import fs from 'fs';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
 import { DocsLayout } from '@/components/DocsLayout';
 import { Alert } from '@/components/mdx/Alert';
 import { Callout } from '@/components/mdx/Callout';
@@ -44,18 +47,18 @@ const mdxComponents = {
       {children}
     </h1>
   ),
-  h2: ({ children }: { children?: React.ReactNode }) => (
-    <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mt-10 mb-4">
+  h2: ({ id, children }: { id?: string; children?: React.ReactNode }) => (
+    <h2 id={id} className="text-2xl font-bold text-black dark:text-white tracking-tight mt-10 mb-4 scroll-mt-24">
       {children}
     </h2>
   ),
-  h3: ({ children }: { children?: React.ReactNode }) => (
-    <h3 className="text-xl font-semibold text-black dark:text-white mt-8 mb-3">
+  h3: ({ id, children }: { id?: string; children?: React.ReactNode }) => (
+    <h3 id={id} className="text-xl font-semibold text-black dark:text-white mt-8 mb-3 scroll-mt-24">
       {children}
     </h3>
   ),
-  h4: ({ children }: { children?: React.ReactNode }) => (
-    <h4 className="text-lg font-semibold text-black dark:text-white mt-6 mb-2">
+  h4: ({ id, children }: { id?: string; children?: React.ReactNode }) => (
+    <h4 id={id} className="text-lg font-semibold text-black dark:text-white mt-6 mb-2 scroll-mt-24">
       {children}
     </h4>
   ),
@@ -134,13 +137,15 @@ export default async function MdxDocPage({ params }: PageProps) {
 
   return (
     <DocsLayout>
-      <article className="max-w-3xl">
+      <article className="max-w-3xl min-w-0 break-words">
         <MDXRemote
           source={source}
           components={mdxComponents}
           options={{
             mdxOptions: {
-              remarkPlugins: [remarkGfm],
+              remarkPlugins: [remarkGfm, remarkMath],
+              rehypePlugins: [rehypeSlug, rehypeKatex],
+              format: filePath.endsWith('.md') ? 'md' : 'mdx',
             },
           }}
         />

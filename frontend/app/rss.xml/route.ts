@@ -10,6 +10,7 @@
  */
 
 import { getChangelogEntries } from '@/lib/changelog';
+
 declare const process: { env: Record<string, string | undefined> };
 
 /** Deployed origin — override via NEXT_PUBLIC_SITE_URL env var. */

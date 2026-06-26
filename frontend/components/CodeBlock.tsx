@@ -214,7 +214,7 @@ export function CodeBlock({
           <div
             ref={codeRef}
             tabIndex={0}
-            className="flex-1 overflow-x-auto text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 [&_pre]:!bg-transparent [&_pre]:!p-4 [&_pre]:!m-0 [&_code]:!text-sm [&_code]:leading-6 [&_code]:font-mono"
+            className="flex-1 min-w-0 overflow-x-auto text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500 [&_pre]:!bg-transparent [&_pre]:!p-4 [&_pre]:!m-0 [&_code]:!text-sm [&_code]:leading-6 [&_code]:font-mono"
             dangerouslySetInnerHTML={{ __html: highlightedCode || fallbackHtml }}
             aria-label="Code block content"
             role="region"
