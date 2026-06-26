@@ -15,14 +15,31 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      const target = e.target as HTMLElement | null;
+      const isTyping =
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.isContentEditable;
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+
+      if (!isTyping && e.key === "/") {
         e.preventDefault();
         setIsSearchOpen(true);
       }
     };
 
+    const handleOpenSearch = () => setIsSearchOpen(true);
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("open-doc-search", handleOpenSearch);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("open-doc-search", handleOpenSearch);
+    };
   }, []);
 
   return (
@@ -74,7 +91,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
             </svg>
             <span>Search documentation...</span>
             <kbd className="absolute right-3 hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded">
-              ⌘K
+              Ctrl K
             </kbd>
           </button>
         </div>

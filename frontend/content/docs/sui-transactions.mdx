@@ -1,0 +1,84 @@
+---
+title: Sui Transactions Migration
+---
+
+# @mysten/sui/transactions
+
+The transaction builder API was renamed and tightened. Most applications should migrate from `TransactionBlock` to `Transaction`, update data access calls, and use the new helpers for pure values and commands.
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## Transaction class
+
+`TransactionBlock` is now `Transaction`. The builder still supports programmable transaction construction, but the public API reads as a transaction rather than a block.
+
+```diff-ts
+- import { TransactionBlock } from '@mysten/sui.js/transactions';
++ import { Transaction } from '@mysten/sui/transactions';
+
+- const txb = new TransactionBlock();
++ const tx = new Transaction();
+```
+
+## Building transactions
+
+Use `tx.object`, `tx.pure.*`, and command helpers on the transaction instance. This keeps object references and pure arguments explicit.
+
+```ts
+import { Transaction } from '@mysten/sui/transactions';
+
+const tx = new Transaction();
+const coin = tx.splitCoins(tx.gas, [tx.pure.u64(1_000_000)]);
+
+tx.transferObjects([coin], tx.pure.address(recipient));
+```
+
+## Cloning transactions
+
+Clone an existing transaction before making a variant for simulation, sponsorship, or signing. Do not mutate a shared builder that another flow still owns.
+
+```ts
+const preview = Transaction.from(tx);
+preview.setSender(sender);
+
+const sponsored = Transaction.from(tx);
+sponsored.setSenderIfNotSet(sender);
+sponsored.setGasOwner(sponsor);
+```
+
+## blockData to getData
+
+Use `getData()` instead of reading the old `blockData` property directly.
+
+```diff-ts
+- const inputs = txb.blockData.inputs;
++ const inputs = tx.getData().inputs;
+```
+
+## Pure values
+
+Prefer typed pure helpers over manually serializing primitive values. The helper name documents the BCS type expected by the Move call.
+
+```ts
+tx.moveCall({
+  target: `${packageId}::vault::deposit`,
+  arguments: [
+    tx.object(vaultId),
+    tx.pure.u64(amount),
+    tx.pure.vector('u8', memoBytes),
+  ],
+});
+```
+
+## Commands
+
+Commands are now represented through transaction methods such as `moveCall`, `splitCoins`, `mergeCoins`, `transferObjects`, and `makeMoveVec`. Use those methods as the stable surface instead of constructing command shapes by hand.
+
+```ts
+const [ticket] = tx.moveCall({
+  target: `${packageId}::tickets::mint`,
+  arguments: [tx.pure.string(label)],
+});
+
+tx.transferObjects([ticket], tx.pure.address(owner));
+```

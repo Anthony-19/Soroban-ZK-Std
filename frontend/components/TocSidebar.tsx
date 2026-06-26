@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface TocItem {
   id: string;
@@ -11,8 +12,11 @@ interface TocItem {
 export function TocSidebar() {
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
+  const pathname = usePathname();
 
   useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+
     // Wait a brief moment to ensure MDX has rendered
     const timeoutId = setTimeout(() => {
       const elements = Array.from(document.querySelectorAll("main h2, main h3"));
@@ -26,7 +30,7 @@ export function TocSidebar() {
 
       setItems(headings);
 
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         (entries) => {
           const visibleEntries = entries.filter((entry) => entry.isIntersecting);
           if (visibleEntries.length > 0) {
@@ -37,13 +41,15 @@ export function TocSidebar() {
         { rootMargin: "-100px 0px -66% 0px" }
       );
 
-      elements.forEach((elem) => observer.observe(elem));
-
-      return () => observer.disconnect();
+      const currentObserver = observer;
+      elements.forEach((elem) => currentObserver?.observe(elem));
     }, 100);
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+    return () => {
+      clearTimeout(timeoutId);
+      observer?.disconnect();
+    };
+  }, [pathname]);
 
   if (items.length === 0) return null;
 
@@ -58,6 +64,7 @@ export function TocSidebar() {
             <li key={item.id} className={`${item.level === 3 ? "ml-4" : ""}`}>
               <a
                 href={`#${item.id}`}
+                aria-current={activeId === item.id ? "location" : undefined}
                 className={`block truncate transition-colors duration-200 ${
                   activeId === item.id
                     ? "text-blue-600 dark:text-blue-400 font-medium"

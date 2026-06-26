@@ -1,0 +1,56 @@
+---
+title: Sui Transaction Types Migration
+---
+
+# Transaction types
+
+The transaction type model changed with the new `Transaction` builder. Code that inspected raw transaction internals should move to the public data returned by `getData()` and the typed input and command helpers.
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## Shape changes
+
+The new shapes distinguish object inputs, pure inputs, and command results more consistently. If your application stores transaction JSON or tests exact transaction objects, update those fixtures after migrating the builder calls.
+
+```diff-ts
+- const command = txb.blockData.transactions[0];
+- const input = txb.blockData.inputs[0];
++ const command = tx.getData().commands[0];
++ const input = tx.getData().inputs[0];
+```
+
+## Public helpers over internal checks
+
+Prefer builder helpers and exported type guards over checking private fields. This is especially important when you pass command results between calls.
+
+```ts
+const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(1000)]);
+
+tx.moveCall({
+  target: `${packageId}::pay::deposit`,
+  arguments: [coin],
+});
+```
+
+## getPureSerializationType removed
+
+The old pure serialization lookup was removed. Pass the target type to the typed pure helper or serialize with the BCS type directly.
+
+```diff-ts
+- const type = getPureSerializationType('u64');
+- const value = txb.pure(amount, type);
++ const value = tx.pure.u64(amount);
+```
+
+```ts
+import { bcs } from '@mysten/sui/bcs';
+
+const bytes = bcs.u64().serialize(amount).toBytes();
+const argument = tx.pure(bytes);
+```
+
+## Test strategy
+
+- Snapshot the transaction data returned by `getData()` rather than private builder fields.
+- Keep tests focused on commands, inputs, sender, gas owner, and gas payment.
+- Rebuild snapshots after converting `TransactionBlock` fixtures to `Transaction`.

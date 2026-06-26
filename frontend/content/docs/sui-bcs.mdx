@@ -1,0 +1,90 @@
+---
+title: Sui BCS Migration
+---
+
+# @mysten/sui/bcs
+
+The BCS package now favors composable type builders, clearer parsing, and explicit constraints. Review custom registries and hand-written serializers before upgrading.
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## BCS types
+
+Import `bcs` from `@mysten/sui/bcs` and compose serializers directly.
+
+```ts
+import { bcs } from '@mysten/sui/bcs';
+
+const Order = bcs.struct('Order', {
+  maker: bcs.Address,
+  amount: bcs.u64(),
+  memo: bcs.vector(bcs.u8()),
+});
+
+const bytes = Order.serialize({
+  maker,
+  amount: 42n,
+  memo: [1, 2, 3],
+}).toBytes();
+```
+
+## Registry changes
+
+The registry-oriented API is no longer the preferred path for application code. Define serializers close to the Move structs they represent and reuse those definitions from transactions, tests, and indexers.
+
+```diff-ts
+- const registry = new BCS(getSuiMoveConfig());
+- registry.registerStructType('Order', { maker: 'address', amount: 'u64' });
+- const bytes = registry.ser('Order', order).toBytes();
++ const bytes = Order.serialize(order).toBytes();
+```
+
+## Size limits
+
+BCS parsing and serialization should be bounded when accepting user input, off-chain payloads, or API data. Keep limits close to the protocol or product expectation instead of decoding unbounded vectors.
+
+```ts
+const Memo = bcs.vector(bcs.u8(), {
+  maxSize: 1024,
+});
+```
+
+## New methods
+
+Use the serializer methods returned by each BCS type:
+
+- `serialize(value)` to encode a value.
+- `parse(bytes)` to decode bytes.
+- `toBytes()` on serialized output for raw bytes.
+- `toBase64()` when sending through JSON APIs.
+
+```ts
+const encoded = bcs.u64().serialize(10n);
+const bytes = encoded.toBytes();
+const value = bcs.u64().parse(bytes);
+```
+
+## Generics
+
+Represent generic Move structs with a factory function. The caller supplies the concrete BCS type.
+
+```ts
+const Box = <T,>(inner: T) =>
+  bcs.struct('Box', {
+    value: inner,
+  });
+
+const AddressBox = Box(bcs.Address);
+```
+
+## Enums
+
+Use `bcs.enum` for tagged variants and keep variant names aligned with Move.
+
+```ts
+const OrderStatus = bcs.enum('OrderStatus', {
+  Open: null,
+  Filled: bcs.struct('Filled', { atCheckpoint: bcs.u64() }),
+  Cancelled: null,
+});
+```

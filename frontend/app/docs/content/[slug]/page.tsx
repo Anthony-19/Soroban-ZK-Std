@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation';
 import fs from 'fs';
+import React from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import { DocsLayout } from '@/components/DocsLayout';
+import { LazyDocsRegion } from '@/components/LazyDocsRegion';
 import { Alert } from '@/components/mdx/Alert';
 import { Callout } from '@/components/mdx/Callout';
 import { Demo } from '@/components/mdx/Demo';
@@ -31,6 +33,70 @@ function stripFrontmatter(source: string): string {
   return lines.slice(endIndex + 1).join('\n').replace(/^\n+/, '');
 }
 
+function extractText(children: React.ReactNode): string {
+  if (typeof children === 'string') return children;
+  if (Array.isArray(children)) return children.map(extractText).join('');
+  if (React.isValidElement(children)) return extractText(children.props.children);
+  return '';
+}
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/`/g, '')
+    .replace(/@/g, '')
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function slugToTitle(slug: string): string {
+  return slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function splitBelowFold(source: string): [string, string] {
+  const firstH2 = source.indexOf('\n## ');
+  if (firstH2 === -1) return [source, ''];
+
+  const secondH2 = source.indexOf('\n## ', firstH2 + 1);
+  if (secondH2 === -1) return [source, ''];
+
+  return [source.slice(0, secondH2), source.slice(secondH2).replace(/^\n+/, '')];
+}
+
+function LinkedHeading({
+  as: Tag,
+  children,
+  className,
+}: {
+  as: 'h1' | 'h2' | 'h3';
+  children?: React.ReactNode;
+  className: string;
+}) {
+  const text = extractText(children);
+  const id = slugify(text);
+  const isH1 = Tag === 'h1';
+
+  return (
+    <Tag id={isH1 ? undefined : id} className={`${className} group scroll-mt-24`}>
+      {children}
+      {!isH1 && (
+        <a
+          href={`#${id}`}
+          aria-label={`Link to ${text}`}
+          className="ml-2 opacity-0 group-hover:opacity-100 focus:opacity-100 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-opacity"
+        >
+          #
+        </a>
+      )}
+    </Tag>
+  );
+}
+
 export async function generateStaticParams() {
   return getAllDocSlugs().map(({ slug }) => ({ slug }));
 }
@@ -40,19 +106,19 @@ const mdxComponents = {
   Callout,
   Demo,
   h1: ({ children }: { children?: React.ReactNode }) => (
-    <h1 className="text-4xl font-extrabold text-black dark:text-white tracking-tight mb-6 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+    <LinkedHeading as="h1" className="text-4xl font-extrabold text-black dark:text-white tracking-tight mb-6 pb-3 border-b border-neutral-200 dark:border-neutral-800">
       {children}
-    </h1>
+    </LinkedHeading>
   ),
   h2: ({ children }: { children?: React.ReactNode }) => (
-    <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mt-10 mb-4">
+    <LinkedHeading as="h2" className="text-2xl font-bold text-black dark:text-white tracking-tight mt-12 mb-4">
       {children}
-    </h2>
+    </LinkedHeading>
   ),
   h3: ({ children }: { children?: React.ReactNode }) => (
-    <h3 className="text-xl font-semibold text-black dark:text-white mt-8 mb-3">
+    <LinkedHeading as="h3" className="text-xl font-semibold text-black dark:text-white mt-9 mb-3">
       {children}
-    </h3>
+    </LinkedHeading>
   ),
   h4: ({ children }: { children?: React.ReactNode }) => (
     <h4 className="text-lg font-semibold text-black dark:text-white mt-6 mb-2">
@@ -60,7 +126,7 @@ const mdxComponents = {
     </h4>
   ),
   p: ({ children }: { children?: React.ReactNode }) => (
-    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+    <p className="text-neutral-600 dark:text-neutral-400 leading-8 mb-5">
       {children}
     </p>
   ),
@@ -80,7 +146,7 @@ const mdxComponents = {
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
     <a
       href={href}
-      className="text-blue-600 dark:text-blue-400 hover:underline underline-offset-2"
+      className="text-blue-600 dark:text-blue-400 hover:underline underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm"
     >
       {children}
     </a>
@@ -91,7 +157,7 @@ const mdxComponents = {
       return <MdxCodeBlock className={className}>{children}</MdxCodeBlock>;
     }
     return (
-      <code className="bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white px-1.5 py-0.5 rounded text-sm font-mono">
+      <code className="bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white px-1.5 py-0.5 rounded text-[0.925em] font-mono">
         {children}
       </code>
     );
@@ -131,12 +197,34 @@ export default async function MdxDocPage({ params }: PageProps) {
   if (!filePath) notFound();
 
   const source = stripFrontmatter(fs.readFileSync(filePath, 'utf-8'));
+  const [aboveFold, belowFold] = splitBelowFold(source);
+  const title = slugToTitle(params.slug);
 
   return (
     <DocsLayout>
-      <article className="max-w-3xl">
+      <nav aria-label="Breadcrumb" className="mb-8 text-sm text-neutral-500 dark:text-neutral-400">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li>
+            <a href="/docs" className="hover:text-black dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white rounded">
+              Docs
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href="/docs/content" className="hover:text-black dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white rounded">
+              Content
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" className="text-neutral-800 dark:text-neutral-200">
+            {title}
+          </li>
+        </ol>
+      </nav>
+
+      <article className="max-w-3xl docs-prose">
         <MDXRemote
-          source={source}
+          source={aboveFold}
           components={mdxComponents}
           options={{
             mdxOptions: {
@@ -144,6 +232,19 @@ export default async function MdxDocPage({ params }: PageProps) {
             },
           }}
         />
+        {belowFold && (
+          <LazyDocsRegion>
+            <MDXRemote
+              source={belowFold}
+              components={mdxComponents}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                },
+              }}
+            />
+          </LazyDocsRegion>
+        )}
       </article>
     </DocsLayout>
   );

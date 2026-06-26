@@ -1,0 +1,58 @@
+---
+title: Sui Utilities and Crypto Migration
+---
+
+# Utilities, multisig, verify, and cryptography
+
+The Sui SDK split helpers into clearer package subpaths. Keep utility formatting, multisig, verification, and key material imports in their dedicated modules.
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## /utils
+
+Use `@mysten/sui/utils` for address, digest, and display helpers. Keep this layer free of wallet and signing concerns.
+
+```diff-ts
+- import { normalizeSuiAddress } from '@mysten/sui.js/utils';
++ import { normalizeSuiAddress } from '@mysten/sui/utils';
+```
+
+## /multisig
+
+Use `@mysten/sui/multisig` for multisig public keys and signature assembly. Keep signer ordering and threshold validation explicit in tests.
+
+```ts
+import { MultiSigPublicKey } from '@mysten/sui/multisig';
+
+const publicKey = MultiSigPublicKey.fromPublicKeys({
+  threshold: 2,
+  publicKeys,
+});
+```
+
+## /verify
+
+Use `@mysten/sui/verify` for signature verification utilities. Verification code should consume the final serialized transaction or personal message bytes, not the mutable transaction builder.
+
+```ts
+import { verifyPersonalMessageSignature } from '@mysten/sui/verify';
+
+const publicKey = await verifyPersonalMessageSignature(message, signature);
+```
+
+## /cryptography
+
+Use `@mysten/sui/cryptography` for shared cryptographic interfaces and helpers, and import concrete keypairs from their curve-specific modules.
+
+```diff-ts
+- import { PublicKey } from '@mysten/sui.js/cryptography';
+- import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
++ import { PublicKey } from '@mysten/sui/cryptography';
++ import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+```
+
+## Migration notes
+
+- Keep public key parsing and address derivation in one module so audits can inspect it easily.
+- Check all signature verification paths after changing imports.
+- Prefer curve-specific keypair imports for bundle size and clarity.

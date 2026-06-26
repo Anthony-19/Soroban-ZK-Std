@@ -1,0 +1,52 @@
+---
+title: Sui Package Migration
+---
+
+# Changes to @mysten/sui
+
+<Alert type="warning">
+  The Sui TypeScript SDK moved from the old package layout to `@mysten/sui`. Audit every import path before bumping the package version.
+</Alert>
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## Package rename
+
+Replace legacy `@mysten/sui.js` dependencies with `@mysten/sui`. The new package keeps clients, transactions, BCS, cryptography, and utility helpers under explicit subpaths.
+
+```bash
+npm uninstall @mysten/sui.js
+npm install @mysten/sui
+```
+
+```diff-ts
+- import { SuiClient } from '@mysten/sui.js/client';
+- import { TransactionBlock } from '@mysten/sui.js/transactions';
++ import { SuiClient } from '@mysten/sui/client';
++ import { Transaction } from '@mysten/sui/transactions';
+```
+
+## Import map
+
+Use package subpaths instead of deep internal imports. This makes tree-shaking and future upgrades easier because public APIs are grouped by domain.
+
+| Old area | New import |
+|---|---|
+| Client APIs | `@mysten/sui/client` |
+| Transactions | `@mysten/sui/transactions` |
+| BCS helpers | `@mysten/sui/bcs` |
+| Utility helpers | `@mysten/sui/utils` |
+| Cryptography | `@mysten/sui/cryptography` |
+| Multisig | `@mysten/sui/multisig` |
+| Verification | `@mysten/sui/verify` |
+
+## Migration checklist
+
+- Replace package names in `package.json`, lockfiles, and workspace dependency overrides.
+- Update imports before changing application code so type errors point to real API changes.
+- Run type checking after each group of imports is migrated.
+- Keep wallet adapter, kiosk, Enoki, dapp-kit, zksend, and wallet-standard packages on compatible versions.
+
+<Callout label="Tip">
+  If an import path includes `sui.js`, treat it as a migration target even when the code still compiles through a transitive dependency.
+</Callout>

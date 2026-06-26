@@ -49,6 +49,17 @@ export const navigation: NavItem[] = [
     ],
   },
   {
+    title: "Sui Migration",
+    children: [
+      { title: "Package Rename", href: "/docs/content/sui-package-migration" },
+      { title: "Transactions", href: "/docs/content/sui-transactions" },
+      { title: "Transaction Types", href: "/docs/content/sui-transaction-types" },
+      { title: "BCS", href: "/docs/content/sui-bcs" },
+      { title: "Utilities and Crypto", href: "/docs/content/sui-utilities-crypto" },
+      { title: "Dapp Packages", href: "/docs/content/sui-dapp-packages" },
+    ],
+  },
+  {
     title: "Reference",
     children: [
       { title: "ZK Cryptography Glossary", href: "/docs/glossary" },

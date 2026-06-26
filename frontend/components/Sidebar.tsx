@@ -101,6 +101,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [open, onClose]);
 
+  const openSearch = () => {
+    window.dispatchEvent(new Event("open-doc-search"));
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -131,6 +135,26 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </span>
             </div>
           </div>
+
+          <button
+            onClick={openSearch}
+            className="relative w-full mb-4 flex items-center pl-10 pr-16 py-2 text-sm bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white transition-all duration-200"
+            aria-label="Search documentation"
+          >
+            <svg
+              className="absolute left-3 w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="truncate">Search documentation</span>
+            <kbd className="absolute right-3 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded">
+              /
+            </kbd>
+          </button>
 
           {navigation.map((item) => (
             <SidebarSection key={item.title} item={item} />

@@ -1,0 +1,61 @@
+---
+title: Sui Dapp Package Migration
+---
+
+# Kiosk, Enoki, dapp-kit, zksend, wallet-standard, and helpers
+
+The application-level packages around the Sui SDK also need coordinated upgrades. Treat them as one compatibility set with the base `@mysten/sui` package.
+
+Source: [Mysten Labs Sui SDK migration guide](https://sdk.mystenlabs.com/sui/migrations/sui-1.0).
+
+## @mysten/kiosk
+
+Upgrade kiosk code alongside the Sui SDK and replace old transaction builder imports in listing, purchase, and transfer flows.
+
+```diff-ts
+- import { TransactionBlock } from '@mysten/sui.js/transactions';
++ import { Transaction } from '@mysten/sui/transactions';
+```
+
+## @mysten/enoki
+
+Enoki integrations should use the current client and transaction imports when building sponsored or zkLogin-backed flows. Check sender, gas owner, and sponsored execution paths after migrating.
+
+```ts
+import { Transaction } from '@mysten/sui/transactions';
+
+const tx = new Transaction();
+tx.setSender(userAddress);
+```
+
+## dapp-kit
+
+Keep dapp-kit on a version compatible with the Sui SDK package rename. Components and hooks should receive `Transaction` instances, not legacy transaction blocks.
+
+```diff-ts
+- const txb = new TransactionBlock();
+- signAndExecuteTransactionBlock({ transactionBlock: txb });
++ const tx = new Transaction();
++ signAndExecuteTransaction({ transaction: tx });
+```
+
+## @mysten/zksend
+
+zksend flows commonly create transferable assets and share links. Update imports and re-run link creation tests because transaction shape snapshots may change after the builder migration.
+
+## @mysten/wallet-standard
+
+Wallet-standard integrations should advertise and consume the current Sui transaction feature names exposed by the upgraded wallet packages. Test connection, signing, and sign-and-execute flows in at least one Chromium browser and one WebKit or Firefox browser.
+
+## Helpers
+
+Keep local helper wrappers thin:
+
+- `createTransaction()` should return `new Transaction()`.
+- `serializePure()` should call `tx.pure.*` or a concrete BCS serializer.
+- `readTransactionData()` should call `tx.getData()`.
+- `copyAddress()` and other UI helpers should stay in app utilities, not SDK shims.
+
+<Alert type="info">
+  After the package migration, most remaining issues are naming mismatches in helper wrappers and old test fixtures.
+</Alert>

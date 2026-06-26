@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import { getFlatNavItems } from '@/lib/navigation';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -12,6 +14,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
   const modalRef = useFocusTrap(isOpen);
   const inputRef = useRef<HTMLInputElement>(null);
+  const results = getFlatNavItems().filter((item) => {
+    const haystack = `${item.title} ${item.href}`.toLowerCase();
+    return query.trim() ? haystack.includes(query.trim().toLowerCase()) : true;
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -83,15 +89,27 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </button>
         </div>
 
-        {/* Results area - mock for MVP */}
-        <div className="max-h-[60vh] overflow-y-auto p-4">
-          {query ? (
-            <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
-              No results found for &ldquo;{query}&rdquo;
-            </div>
+        <div className="max-h-[60vh] overflow-y-auto p-3" role="listbox" aria-label="Search results">
+          {results.length > 0 ? (
+            <ul className="space-y-1">
+              {results.map((result) => (
+                <li key={result.href}>
+                  <Link
+                    href={result.href}
+                    onClick={onClose}
+                    className="block rounded-lg px-3 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white"
+                  >
+                    <span className="block font-medium">{result.title}</span>
+                    <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                      {result.href}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
-              Start typing to search documentation
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center" role="status">
+              No results found for &ldquo;{query}&rdquo;
             </div>
           )}
         </div>
