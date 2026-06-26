@@ -7,7 +7,7 @@
 
 use ethnum::u256 as eth_u256;
 use soroban_sdk::{symbol_short, vec, Bytes, Env, Vec, U256};
-use zk_core::{Fr, SafeFrom, ZkError};
+use soroban_zk_core::{Fr, SafeFrom, ZkError};
 
 // ── Sponge geometry ───────────────────────────────────────────────────────────
 

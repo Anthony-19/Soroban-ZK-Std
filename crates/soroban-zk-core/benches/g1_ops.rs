@@ -1,4 +1,4 @@
-//! Criterion benchmarks for zk-core G1 point arithmetic primitives.
+//! Criterion benchmarks for soroban-zk-core G1 point arithmetic primitives.
 //!
 //! These benchmarks measure wall-clock time for the core BN254 operations.
 //! Results are used to produce the instruction budget estimates documented
@@ -6,14 +6,14 @@
 //!
 //! # Reproducibility
 //! Run with:
-//!   cargo bench -p zk-core
+//!   cargo bench -p soroban-zk-core
 //!
 //! Results are written to target/criterion/. Use the same machine and
 //! environment across runs for comparable numbers.
 
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use ethnum::u256;
-use zk_core::{Bn254, G1Affine, G1Projective};
+use soroban_zk_core::{Bn254, G1Affine, G1Projective};
 
 // ---------------------------------------------------------------------------
 // Fixed deterministic inputs

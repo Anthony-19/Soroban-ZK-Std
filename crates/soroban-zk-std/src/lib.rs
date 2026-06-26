@@ -9,7 +9,7 @@ pub use pairing::{pairing_check, G2Affine};
 
 use ethnum::u256 as eth_u256;
 use soroban_sdk::{Env, U256};
-use zk_core::{Bn254, Fr, SafeFrom, ZkError};
+use soroban_zk_core::{Bn254, Fr, SafeFrom, ZkError};
 
 /// Validates a Soroban U256 as a BN254 scalar.
 /// This prevents "out of bounds" field element errors in ZK verifiers.
@@ -71,7 +71,7 @@ pub struct ZkContract;
 impl ZkContract {
     /// Benchmark function to ensure CI measures REAL library footprint.
     pub fn validate_scalar(env: Env, val: U256) -> bool {
-        // This forces the compiler to include the ethnum and zk-core logic
+        // This forces the compiler to include the ethnum and soroban-zk-core logic
         env.is_bn254_scalar(val)
     }
 

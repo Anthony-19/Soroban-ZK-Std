@@ -1,7 +1,7 @@
 use ethnum::u256;
 use soroban_sdk::crypto::bn254::{Bn254Fr as SdkFr, Bn254G1Affine as SdkG1Affine};
 use soroban_sdk::{Bytes, BytesN, Env, Vec, U256};
-use zk_core::{Bn254, G1Affine, ZkError};
+use soroban_zk_core::{Bn254, G1Affine, ZkError};
 
 use crate::pairing::{g1_to_bytes, pairing_check, G2Affine};
 

@@ -64,7 +64,7 @@ In `src/lib.rs`, import the core ZK and Soroban types:
 ```rust
 #![no_std]
 use soroban_sdk::{contract, contractimpl, Env, Vec, U256};
-use zk_core::{G1Affine, ZkError};
+use soroban_zk_core::{G1Affine, ZkError};
 use zk_soroban::{pairing::{pairing_check, G2Affine}, HostConvert};
 ```
 
@@ -109,7 +109,7 @@ Groth16 verification requires computing:
 vk_x = IC[0] + sum(public_input[i] * IC[i+1])
 ```
 
-This contract example uses a helper function to compute `vk_x` using scalar multiplication and point addition from `zk-core`.
+This contract example uses a helper function to compute `vk_x` using scalar multiplication and point addition from `soroban-zk-core`.
 
 ```rust
 fn compute_vk_x(public_inputs: &[U256], ic: &Vec<G1Affine>) -> Result<G1Affine, ZkError> {
@@ -212,7 +212,7 @@ Below is a minimal verifier contract skeleton.
 ```rust
 #![no_std]
 use soroban_sdk::{contract, contractimpl, Env, U256, Vec};
-use zk_core::{G1Affine, ZkError};
+use soroban_zk_core::{G1Affine, ZkError};
 use zk_soroban::{pairing::{pairing_check, G2Affine}, HostConvert};
 
 pub struct Groth16Proof {
@@ -232,7 +232,7 @@ pub struct Groth16Vk {
 fn negate_g1(point: G1Affine) -> G1Affine {
     // Negation of a BN254 G1 point is done by negating the Y coordinate in Fq.
     // In other words: `y' = q - y`, where `q` is the BN254 field modulus.
-    // Implement this using `zk-core` field helpers in production.
+    // Implement this using `soroban-zk-core` field helpers in production.
     unimplemented!()
 }
 

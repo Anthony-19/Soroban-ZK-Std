@@ -43,7 +43,7 @@ This is the exact check needed by Groth16 verifiers. The host function performs 
 
 ### Core Types
 
-#### `G1Affine` (from `zk-core`)
+#### `G1Affine` (from `soroban-zk-core`)
 A BN254 G1 point in affine coordinates:
 
 ```rust
@@ -89,7 +89,7 @@ The main entry point for pairing verification:
 
 ```rust
 use zk_soroban::pairing::{pairing_check, G2Affine};
-use zk_core::G1Affine;
+use soroban_zk_core::G1Affine;
 
 /// Evaluates the BN254 pairing check:
 /// e(A₁, B₁) · e(A₂, B₂) · ... · e(Aₙ, Bₙ) == 1
@@ -122,7 +122,7 @@ A Groth16 verification key consists of several G1 and G2 points. These are gener
 
 ```rust
 use ethnum::u256;
-use zk_core::G1Affine;
+use soroban_zk_core::G1Affine;
 use zk_soroban::pairing::G2Affine;
 
 // These would come from your trusted setup ceremony

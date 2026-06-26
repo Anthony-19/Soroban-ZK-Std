@@ -13,7 +13,7 @@
 //! and case name so failures are trivially traced back to the reference data.
 
 use ethnum::u256;
-use zk_core::{Bn254, G1Affine, G1Projective};
+use soroban_zk_core::{Bn254, G1Affine, G1Projective};
 
 // ---------------------------------------------------------------------------
 // Helpers

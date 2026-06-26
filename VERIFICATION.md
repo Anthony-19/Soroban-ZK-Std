@@ -13,7 +13,7 @@ This branch was created to document the successful verification of the Soroban-Z
 
 - `shielded-asset-template`: 1 test passed
 - `verifier-sample`: 4 tests passed
-- `zk-core` crate tests: 15 tests passed
+- `soroban-zk-core` crate tests: 15 tests passed
 - `zk-soroban` crate tests: 17 tests passed
 - Doc-tests: 1 ignored, 0 failed
 

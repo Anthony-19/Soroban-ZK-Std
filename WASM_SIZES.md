@@ -18,7 +18,7 @@ Measurements taken with `cargo build --target wasm32-unknown-unknown --release`.
 
 The sizes remain identical because the baseline profile was already fully
 optimized (LTO, `opt-level = "z"`, dead-code-elimination).  The structural
-dead code removed from `zk-core` was already eliminated by the linker before
+dead code removed from `soroban-zk-core` was already eliminated by the linker before
 this audit; removing it at the source level cleans the API surface without
 altering binary output.
 
@@ -26,10 +26,10 @@ altering binary output.
 
 ## Dependency Audit
 
-### `zk-core` dependency tree
+### `soroban-zk-core` dependency tree
 
 ```
-zk-core v0.1.0
+soroban-zk-core v0.1.0
 └── ethnum v1.5.3  (default-features = false)
 ```
 
@@ -43,7 +43,7 @@ disabling the optional `serde` and LLVM intrinsics features.
 zk-soroban v0.1.0
 ├── soroban-sdk v26.0.1   (default-features = false, features = ["hazmat-crypto"])
 ├── ethnum v1.5.3         (default-features = false)
-└── zk-core v0.1.0
+└── soroban-zk-core v0.1.0
 ```
 
 **Finding**: `soroban-sdk` is configured with `default-features = false` at the workspace level to guarantee strict `no_std` builds and prevent accidental transitive `std` linkage, ensuring zero-cost abstractions across the entire dependency graph.
@@ -109,13 +109,13 @@ were ever updated.
 | `lto = true`               | ✅ Applied | Workspace profile; cross-crate dead code removal    |
 | `strip = "symbols"`        | ✅ Applied | Workspace profile; removes symbol table             |
 | `codegen-units = 1`        | ✅ Applied | Workspace profile; maximizes LTO effectiveness      |
-| `no_std`                   | ✅ Applied | `zk-core` and `zk-soroban` are `#![no_std]`        |
+| `no_std`                   | ✅ Applied | `soroban-zk-core` and `zk-soroban` are `#![no_std]`        |
 | `ethnum` default-features  | ✅ Applied | `serde` and intrinsics features disabled            |
 | Struct dead code           | ✅ Removed | `G1Jacobian` struct removed                        |
 | Duplicate constants        | ✅ Removed | `SCALAR_ORDER` alias removed                       |
 | Format/Debug in release    | N/A       | `Debug` derives exist but are LTO-eliminated        |
 | `wasm-opt` post-processing | Not yet   | Binaryen `wasm-opt -Oz` could shave further bytes   |
-| Custom allocator           | N/A       | No heap allocations in `zk-core`                   |
+| Custom allocator           | N/A       | No heap allocations in `soroban-zk-core`                   |
 | `serde` dependencies       | N/A       | Not pulled in                                       |
 
 ---

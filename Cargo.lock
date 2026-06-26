@@ -2115,8 +2115,8 @@ version = "0.1.0"
 dependencies = [
  "ethnum",
  "soroban-sdk",
+ "soroban-zk-core",
  "soroban-zk-std",
- "zk-core",
 ]
 
 [[package]]
@@ -2341,8 +2341,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "soroban-zk-std"
+name = "soroban-zk-core"
 version = "0.1.0"
+dependencies = [
+ "criterion",
+ "ethnum",
+ "itertools 0.15.0",
+ "num-traits",
+ "proptest",
+]
+
+[[package]]
+name = "soroban-zk-std"
+version = "0.1.1"
 dependencies = [
  "ark-bn254 0.6.0",
  "ark-ec 0.6.0",
@@ -2354,7 +2365,7 @@ dependencies = [
  "ethnum",
  "num-bigint",
  "soroban-sdk",
- "zk-core",
+ "soroban-zk-core",
 ]
 
 [[package]]
@@ -3047,17 +3058,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "zk-core"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "ethnum",
- "itertools 0.15.0",
- "num-traits",
- "proptest",
 ]
 
 [[package]]

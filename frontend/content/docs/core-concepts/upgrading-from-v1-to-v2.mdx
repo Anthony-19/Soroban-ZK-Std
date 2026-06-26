@@ -21,7 +21,7 @@ Use this document to identify breaking changes, update dependency versions, and 
 
 This migration guide covers:
 
-- dependency version updates for `zk-soroban`, `zk-core`, and related crates
+- dependency version updates for `zk-soroban`, `soroban-zk-core`, and related crates
 - API and module path changes
 - contract initialization and runtime behavior changes
 - recommended verification and regression testing before deployment
@@ -55,7 +55,7 @@ It does not replace the release notes for v2; instead, it provides a structured 
 1. Confirm the target Soroban protocol and SDK versions required by `v2`.
 2. Update `Cargo.toml` dependencies:
    - `zk-soroban = "^2.0.0"`
-   - `zk-core = "^2.0.0"` (or the matching v2 compatible version)
+   - `soroban-zk-core = "^2.0.0"` (or the matching v2 compatible version)
 3. Audit all import paths and API usage from v1.
 4. Update any contract storage layout or initialization logic affected by v2.
 5. Re-run existing unit tests and integration tests.
@@ -83,7 +83,7 @@ It does not replace the release notes for v2; instead, it provides a structured 
 [dependencies]
 soroban-sdk = "25.0.0"
 zk-soroban = "^2.0.0"
-zk-core = "^2.0.0"
+soroban-zk-core = "^2.0.0"
 ```
 
 ### 2. Update imports

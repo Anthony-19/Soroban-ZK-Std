@@ -1,6 +1,6 @@
 
 [package]
-name = "zk-core"
+name = "soroban-zk-core"
 version = "0.1.0"
 edition = "2021"
 description = "Core cryptographic primitives for Soroban ZK Standard."

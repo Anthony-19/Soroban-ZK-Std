@@ -13,7 +13,7 @@ cap: "CAP-0075"
 
 Polynomials are the backbone of modern zero-knowledge proof systems. Whether you're constructing Quadratic Arithmetic Programs (QAPs) for Groth16, building polynomial commitment schemes, or performing FFT-based operations for PLONK, efficient polynomial arithmetic over finite fields is essential.
 
-This document defines the API for working with polynomials over BN254's scalar field `Fr`, using the field arithmetic primitives from `zk-core`.
+This document defines the API for working with polynomials over BN254's scalar field `Fr`, using the field arithmetic primitives from `soroban-zk-core`.
 
 ## Mathematical Background
 
@@ -37,7 +37,7 @@ where each coefficient `aᵢ ∈ Fr` (the BN254 scalar field with modulus `r`).
 ### Type Definition
 
 ```rust
-use zk_core::{Bn254, Fr, SafeFrom};
+use soroban_zk_core::{Bn254, Fr, SafeFrom};
 use ethnum::u256;
 
 /// A dense polynomial represented by its coefficient vector.
@@ -481,9 +481,9 @@ impl From<DensePolynomial> for SparsePolynomial {
 }
 ```
 
-## Integration with `zk-core`
+## Integration with `soroban-zk-core`
 
-All polynomial arithmetic uses `zk-core`'s BN254 field operations:
+All polynomial arithmetic uses `soroban-zk-core`'s BN254 field operations:
 
 | Operation | Function | Description |
 |-----------|----------|-------------|
@@ -507,7 +507,7 @@ All polynomial coefficients and evaluation points must be in `[0, r)`.
 
 ```rust
 use ethnum::u256;
-use zk_core::Bn254;
+use soroban_zk_core::Bn254;
 
 // Define p(x) = 1 + 2x + 3x²
 let p = DensePolynomial::from_coefficients_vec(vec![

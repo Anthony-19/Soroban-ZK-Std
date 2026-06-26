@@ -1,5 +1,5 @@
 use ethnum::u256;
-use zk_core::Bn254;
+use soroban_zk_core::Bn254;
 
 const R_MINUS_1: u256 = u256::from_words(
     0x30644e72e131a029b85045b68181585d_u128,

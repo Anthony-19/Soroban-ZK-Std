@@ -2,7 +2,7 @@
 
 use ethnum::u256;
 use soroban_sdk::{Env, U256};
-use zk_core::{Bn254, G1Affine, G1Projective};
+use soroban_zk_core::{Bn254, G1Affine, G1Projective};
 use soroban_zk_std::pairing::{pairing_check, G2Affine};
 use soroban_zk_std::poseidon2::hash_to_field;
 

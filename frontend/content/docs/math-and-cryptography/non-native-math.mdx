@@ -21,8 +21,8 @@ In this repository, that boundary usually means one of two things:
 
 The library already exposes the boundary primitives you need:
 
-- `zk_core::Fr` for canonical BN254 scalar elements
-- `zk_core::SafeFrom` for fallible, no-panic range validation
+- `soroban_zk_core::Fr` for canonical BN254 scalar elements
+- `soroban_zk_core::SafeFrom` for fallible, no-panic range validation
 - `zk_soroban::HostConvert` for `Env::fr_from_u256()`
 - `zk_soroban::ZkEnv` for `Env::is_bn254_scalar()`
 - `zk_soroban::pairing::G2Affine` for Fq2 coordinates at the pairing boundary
@@ -74,11 +74,11 @@ The safest integration pattern is:
 2. Reconstruct the integer representation once.
 3. Validate against the BN254 modulus.
 4. Convert into `Fr` only after the value is proven in-range.
-5. Perform all downstream arithmetic in `zk-core`.
+5. Perform all downstream arithmetic in `soroban-zk-core`.
 
 ```rust
 use soroban_sdk::{Env, U256};
-use zk_core::{Fr, ZkError};
+use soroban_zk_core::{Fr, ZkError};
 use zk_soroban::{HostConvert, ZkEnv};
 
 pub fn load_foreign_scalar(env: &Env, raw: U256) -> Result<Fr, ZkError> {
@@ -155,10 +155,10 @@ That ordering matches the host expectation used by `pairing_check()`.
 
 ```rust
 use soroban_sdk::Env;
-use zk_core::G1Affine;
+use soroban_zk_core::G1Affine;
 use zk_soroban::pairing::{pairing_check, G2Affine};
 
-pub fn verify_pairing(env: &Env, p: G1Affine, q: G2Affine) -> Result<bool, zk_core::ZkError> {
+pub fn verify_pairing(env: &Env, p: G1Affine, q: G2Affine) -> Result<bool, soroban_zk_core::ZkError> {
     pairing_check(env, &[(p, q)])
 }
 ```

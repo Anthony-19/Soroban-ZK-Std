@@ -1,6 +1,6 @@
 [package]
 name = "soroban-zk-std"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A high-performance cryptographic standard library for Stellar Protocol 25 ZK-Primitives."
 repository = "https://github.com/georgegoldman/Soroban-ZK-Std"
@@ -23,7 +23,7 @@ required-features = ["std"]  # Only builds when "std" feature is enabled
 # Inherited from workspace (no_std enabled)
 soroban-sdk = { workspace = true, features = ["hazmat-crypto"]}
 ethnum = { workspace = true }
-zk-core = { workspace = true }
+soroban-zk-core = { workspace = true }
 
 # Math & Crypto (Strictly no_std)
 

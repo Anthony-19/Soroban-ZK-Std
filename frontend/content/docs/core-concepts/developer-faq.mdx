@@ -43,7 +43,7 @@ make all
 
 One of your dependencies or your own code is pulling in the Rust standard library, which is unavailable in the `wasm32-unknown-unknown` target.
 
-**Check your own code:** every file in `zk-core` and `zk-soroban` must begin with `#![no_std]`. If this attribute is missing, the compiler assumes `std`.
+**Check your own code:** every file in `soroban-zk-core` and `zk-soroban` must begin with `#![no_std]`. If this attribute is missing, the compiler assumes `std`.
 
 **Find the offending dependency:**
 
@@ -73,14 +73,14 @@ xcode-select --install
 ### Q: How do I run only the unit tests without building the WASM binary?
 
 ```bash
-cargo test -p zk-core
+cargo test -p soroban-zk-core
 cargo test -p zk-soroban
 ```
 
 To run a specific test by name:
 
 ```bash
-cargo test -p zk-core -- field_add_identity --nocapture
+cargo test -p soroban-zk-core -- field_add_identity --nocapture
 ```
 
 ---
@@ -198,7 +198,7 @@ cargo bloat --target wasm32-unknown-unknown --release -p your-contract --crates
 
 Soroban contracts compile to WASM and run inside the Soroban Virtual Machine, which does not provide a host operating system. The Rust standard library (`std`) depends on OS primitives such as file I/O, threads, and a heap allocator. Without these, `std` cannot link, so the WASM binary must be built without it.
 
-`zk-core` contains only pure field arithmetic, which needs nothing from `std`. `zk-soroban` depends on the Soroban SDK, which provides its own `no_std`-compatible allocator when needed.
+`soroban-zk-core` contains only pure field arithmetic, which needs nothing from `std`. `zk-soroban` depends on the Soroban SDK, which provides its own `no_std`-compatible allocator when needed.
 
 ---
 
@@ -207,7 +207,7 @@ Soroban contracts compile to WASM and run inside the Soroban Virtual Machine, wh
 Yes, but you must use them from the correct source:
 
 - For types used inside a Soroban contract, use `soroban_sdk::Vec`, `soroban_sdk::Bytes`, and `soroban_sdk::String`.
-- For types used inside `zk-core` (no Soroban dependency), you may use `alloc::vec::Vec` and `alloc::string::String` by enabling the `alloc` crate. Add `extern crate alloc;` at the top of your file and enable the allocator in your Soroban contract crate (the SDK provides one).
+- For types used inside `soroban-zk-core` (no Soroban dependency), you may use `alloc::vec::Vec` and `alloc::string::String` by enabling the `alloc` crate. Add `extern crate alloc;` at the top of your file and enable the allocator in your Soroban contract crate (the SDK provides one).
 
 Avoid using these unnecessarily — heap allocation increases WASM binary size and instruction costs.
 
@@ -215,7 +215,7 @@ Avoid using these unnecessarily — heap allocation increases WASM binary size a
 
 ### Q: How do I handle errors without `std::error::Error`?
 
-Return `Result<T, ZkError>` from any function that can fail. `ZkError` is a simple `Copy` enum defined in `zk-core`:
+Return `Result<T, ZkError>` from any function that can fail. `ZkError` is a simple `Copy` enum defined in `soroban-zk-core`:
 
 ```rust
 pub enum ZkError {
@@ -255,7 +255,7 @@ Follow the project's architecture rule:
 
 | What you are adding | Where it goes |
 |--------------------|---------------|
-| A new curve, field, or hash primitive | `crates/zk-core/` — no Soroban imports allowed here |
+| A new curve, field, or hash primitive | `crates/soroban-zk-core/` — no Soroban imports allowed here |
 | A developer tool for use inside contracts | `crates/zk-soroban/` — may use `soroban_sdk` |
 | An integration test or sample contract | `contracts/` |
 

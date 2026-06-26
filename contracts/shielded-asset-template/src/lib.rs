@@ -1,7 +1,7 @@
 #![no_std]
 
 use soroban_sdk::{contract, contractimpl, contracttype, Address, Bytes, Env};
-use zk_core::{ElGamalCiphertext, G1Affine};
+use soroban_zk_core::{ElGamalCiphertext, G1Affine};
 use soroban_zk_std::groth16::{groth16_verify, Groth16Proof, Groth16VerifyingKey};
 use soroban_zk_std::pairing::G2Affine;
 use ethnum::u256;

@@ -68,13 +68,13 @@ To keep the library modular, we split the code into three distinct areas:
 
 | Component         | Path                          | Purpose                                                                 |
 |------------------|-------------------------------|-------------------------------------------------------------------------|
-| zk-core          | crates/zk-core/               | Pure Math. Elliptic curve logic, Field arithmetic, and U256 mappings. No Soroban dependencies here. |
+| soroban-zk-core          | crates/soroban-zk-core/               | Pure Math. Elliptic curve logic, Field arithmetic, and U256 mappings. No Soroban dependencies here. |
 | zk-soroban       | crates/zk-soroban/            | Stellar Integration. Traits that extend the Soroban Env, host-function mappings, and XDR conversion. |
 | verifier-sample  | contracts/verifier-sample/    | Integration Tests. A sample contract used to verify WASM size and gas costs. |
 
 **Rule:** 
 
-If you are adding a new mathematical primitive (e.g., a new Curve), it goes in `zk-core`. If you are adding a tool for developers to use in their contracts, it goes in `zk-soroban`.
+If you are adding a new mathematical primitive (e.g., a new Curve), it goes in `soroban-zk-core`. If you are adding a tool for developers to use in their contracts, it goes in `zk-soroban`.
 
 ### 📥 How to Add Your Code
 

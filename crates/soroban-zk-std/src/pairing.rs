@@ -3,7 +3,7 @@ use soroban_sdk::crypto::bn254::{Bn254G1Affine as SdkG1Affine, Bn254G2Affine as 
 use soroban_sdk::BytesN;
 use soroban_sdk::Env;
 use soroban_sdk::Vec;
-use zk_core::{Bn254, G1Affine, ZkError};
+use soroban_zk_core::{Bn254, G1Affine, ZkError};
 
 /// A BN254 G2 point in affine coordinates (X, Y).
 /// Coordinates are elements of the degree-2 extension field Fq²,

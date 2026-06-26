@@ -1,6 +1,6 @@
 use ethnum::u256;
 use proptest::prelude::*;
-use zk_core::Bn254;
+use soroban_zk_core::Bn254;
 
 fn fr_from_seed(seed: [u8; 32]) -> u256 {
     u256::from_be_bytes(seed) % Bn254::FR_MODULUS

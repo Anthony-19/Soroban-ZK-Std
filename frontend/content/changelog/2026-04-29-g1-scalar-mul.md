@@ -5,7 +5,7 @@ version: "minor"
 author: "georgegoldman"
 commit: "1a0ddcd20600e1a6538749b458cf67a9b4f6003d"
 closes: ["#12"]
-tags: ["crypto", "bn254", "constant-time", "zk-core"]
+tags: ["crypto", "bn254", "constant-time", "soroban-zk-core"]
 ---
 
 Closes #12. Implements `g1_scalar_mul` over BN254 G1:

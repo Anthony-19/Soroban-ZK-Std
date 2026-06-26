@@ -15,7 +15,7 @@ cap: "CAP-0075"
 
 A timing side-channel occurs when the execution time of a cryptographic operation depends on secret data. An attacker who can measure execution time with sufficient precision can use these variations to recover private inputs such as scalar values or private keys.
 
-Soroban contracts run inside a deterministic WASM sandbox. While the primary timing oracle is the instruction count reported by the Soroban budget API, subtle variations can still be observable by off-chain attackers measuring ledger close times or node-level execution. This document describes the techniques applied in `zk-core` to mitigate this risk.
+Soroban contracts run inside a deterministic WASM sandbox. While the primary timing oracle is the instruction count reported by the Soroban budget API, subtle variations can still be observable by off-chain attackers measuring ledger close times or node-level execution. This document describes the techniques applied in `soroban-zk-core` to mitigate this risk.
 
 ---
 
@@ -26,7 +26,7 @@ The most critical constant-time primitive in the library is `G1Projective::ct_se
 ### Implementation
 
 ```rust
-// crates/zk-core/src/lib.rs
+// crates/soroban-zk-core/src/lib.rs
 pub fn ct_select(choice: u128, a: Self, b: Self) -> Self {
     let mask = u256::from(0u128).wrapping_sub(u256::from(choice));
     let not_mask = !mask;
@@ -57,7 +57,7 @@ The result is `a` when `choice = 1`, `b` when `choice = 0` — with no condition
 ### Implementation
 
 ```rust
-// crates/zk-core/src/lib.rs
+// crates/soroban-zk-core/src/lib.rs
 pub fn g1_scalar_mul(point: G1Projective, scalar: u256) -> G1Projective {
     if scalar == 0 { return G1Projective::identity(); }
     if scalar == 1 { return point; }
@@ -93,7 +93,7 @@ Modular addition requires reducing the sum back into `[0, p)` when it overflows 
 ### Implementation
 
 ```rust
-// crates/zk-core/src/lib.rs
+// crates/soroban-zk-core/src/lib.rs
 #[inline(always)]
 fn add_mod(a: u256, b: u256, modulus: u256) -> u256 {
     let (sum, overflow) = a.overflowing_add(b);
@@ -116,7 +116,7 @@ Field inversion is implemented via Fermat's little theorem: `a^(p-2) mod p`. The
 ### Implementation
 
 ```rust
-// crates/zk-core/src/lib.rs
+// crates/soroban-zk-core/src/lib.rs
 pub fn invert(a: u256) -> u256 {
     if a == 0 { return u256::from(0u8); }
     let exponent = Self::FR_MODULUS - u256::from(2u8);
@@ -135,7 +135,7 @@ Validating whether a user-supplied value is within the BN254 scalar field uses `
 ### Implementation
 
 ```rust
-// crates/zk-core/src/lib.rs
+// crates/soroban-zk-core/src/lib.rs
 impl SafeFrom<u256> for Fr {
     #[inline(always)]
     fn safe_from(val: u256) -> Result<Self, ZkError> {
