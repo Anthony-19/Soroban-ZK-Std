@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ThemeToggle } from "./theme-toggle";
 import { VersionSelector } from "./version-selector/VersionSelector";
 import { SearchModal } from "./SearchModal";
 
@@ -99,8 +98,6 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
             </svg>
           </a>
 
-          {/* Theme Toggle */}
-          <ThemeToggle />
         </div>
       </div>
 
