@@ -36,6 +36,7 @@ export const navigation: NavItem[] = [
       { title: "G2 Subgroup Validation", href: "docs/g2_subgroup" },
       { title: "KZG Commitment Generation", href: "/docs/kzg_commit" },
       { title: "Batch KZG Verification", href: "/docs/batch_kzg" },
+      { title: "Fiat-Shamir Transcript Rules", href: "/docs/fiat_shamir" },
     ],
   },
   {
