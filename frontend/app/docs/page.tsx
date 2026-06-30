@@ -24,7 +24,7 @@ export default function DocsPage() {
 
       {/* What is Soroban-ZK-Std? */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4">
+        <h2 id="what-is-soroban-zk-std" className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4 scroll-mt-24">
           What is Soroban-ZK-Std?
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
@@ -62,7 +62,7 @@ export default function DocsPage() {
 
       {/* Quick Start */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4">
+        <h2 id="quick-start" className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4 scroll-mt-24">
           Quick Start
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
@@ -71,7 +71,7 @@ export default function DocsPage() {
 
         <CodeBlock
           code={`[dependencies]
-zk-soroban = { git = "https://github.com/georgegoldman/Soroban-ZK-Std" }`}
+soroban-zk-std = { git = "https://github.com/georgegoldman/Soroban-ZK-Std" }`}
           language="toml"
           filename="Cargo.toml"
           showLineNumbers={false}
@@ -83,7 +83,7 @@ zk-soroban = { git = "https://github.com/georgegoldman/Soroban-ZK-Std" }`}
 
         <CodeBlock
           code={`use soroban_sdk::{contract, contractimpl, Env, U256};
-use zk_soroban::ZkEnv;
+use soroban_zk_std::ZkEnv;
 
 #[contract]
 pub struct MyContract;
@@ -103,7 +103,7 @@ impl MyContract {
 
       {/* Architecture */}
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4">
+        <h2 id="architecture" className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4 scroll-mt-24">
           Architecture
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">
@@ -114,7 +114,7 @@ impl MyContract {
           <div className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 transition-colors">
             <h3 className="font-bold text-black dark:text-white mb-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-500" />
-              zk-core
+              soroban-zk-core
             </h3>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Pure math. Elliptic curve logic, field arithmetic, and U256
@@ -124,7 +124,7 @@ impl MyContract {
           <div className="p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 transition-colors">
             <h3 className="font-bold text-black dark:text-white mb-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-violet-500" />
-              zk-soroban
+              soroban-zk-std
             </h3>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Stellar integration. Traits that extend the Soroban Env,
@@ -146,12 +146,12 @@ impl MyContract {
 
       {/* Next Steps */}
       <section>
-        <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4">
+        <h2 id="next-steps" className="text-2xl font-bold text-black dark:text-white tracking-tight mb-4 scroll-mt-24">
           Next Steps
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <a
-            href="/docs/cap0075"
+            href="/docs/cap0075-integration-guide"
             className="group p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-200 hover:shadow-sm"
           >
             <h3 className="font-bold text-black dark:text-white mb-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
@@ -184,11 +184,11 @@ impl MyContract {
             </p>
           </a>
           <a
-            href="/docs/content"
+            href="/docs/mdx-guide"
             className="group p-5 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-200 hover:shadow-sm"
           >
             <h3 className="font-bold text-black dark:text-white mb-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
-              MDX Content →
+              MDX Guide →
             </h3>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Documentation authored in MDX with embedded React components.

@@ -34,7 +34,7 @@ per transaction. The results below confirm that a complete Groth16 verification
 
 ### BN254 Field & Curve Arithmetic (WASM guest — wall-clock estimate)
 
-Operations implemented natively in `zk-core` run as WASM guest code.
+Operations implemented natively in `soroban-zk-core` run as WASM guest code.
 The Soroban SDK mock environment does not meter guest WASM instructions,
 so these figures use Criterion wall-clock timings × 3,000 instructions/µs.
 

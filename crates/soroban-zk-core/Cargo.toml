@@ -1,0 +1,21 @@
+
+[package]
+name = "soroban-zk-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core cryptographic primitives for Soroban ZK Standard."
+repository = "https://github.com/georgegoldman/Soroban-ZK-Std"
+license.workspace = true
+
+[dependencies]
+ethnum = {workspace = true}
+num-traits = { version = "0.2.19", default-features = false, features = ["libm"] }
+itertools = { version = "0.15.0", default-features = false }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1"
+
+[[bench]]
+name = "g1_ops"
+harness = false

@@ -1,9 +1,16 @@
 'use client';
 
+<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { getFlatNavItems } from '@/lib/navigation';
+=======
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Link from 'next/link';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import { getFlatNavItems } from '../lib/navigation';
+>>>>>>> main
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -19,30 +26,33 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return query.trim() ? haystack.includes(query.trim().toLowerCase()) : true;
   });
 
+  const results = useMemo(() => {
+    if (!query.trim()) return [];
+    const searchTerms = query.toLowerCase().split(' ');
+    const allItems = getFlatNavItems();
+    return allItems.filter(item => 
+      searchTerms.every(term => 
+        item.title.toLowerCase().includes(term) || item.href.toLowerCase().includes(term)
+      )
+    );
+  }, [query]);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      // Slight delay to ensure modal is rendered before focusing
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       document.body.style.overflow = '';
       setQuery('');
     }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onClose();
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
@@ -51,14 +61,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24 sm:pt-32">
-      {/* Overlay */}
       <div 
         className="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm transition-opacity" 
         onClick={onClose}
         aria-hidden="true"
       />
-
-      {/* Modal */}
       <div
         ref={modalRef as React.RefObject<HTMLDivElement>}
         className="relative w-full max-w-xl transform overflow-hidden rounded-xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-all m-4"
@@ -83,12 +90,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           <button
             onClick={onClose}
             className="ml-3 px-2 py-1 text-xs font-medium text-neutral-500 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded transition-colors"
-            aria-label="Close search modal"
           >
             ESC
           </button>
         </div>
 
+<<<<<<< HEAD
         <div className="max-h-[60vh] overflow-y-auto p-3" role="listbox" aria-label="Search results">
           {results.length > 0 ? (
             <ul className="space-y-1">
@@ -109,6 +116,31 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </ul>
           ) : (
             <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center" role="status">
+=======
+        <div className="max-h-[60vh] overflow-y-auto p-4">
+          {!query ? (
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+              Start typing to search documentation
+            </div>
+          ) : results.length > 0 ? (
+            <div className="flex flex-col space-y-1">
+              {results.map((result) => (
+                <Link
+                  key={result.href}
+                  href={result.href}
+                  onClick={onClose}
+                  className="px-4 py-3 bg-neutral-50 dark:bg-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-neutral-100 transition-colors flex items-center justify-between group"
+                >
+                  <span className="font-medium">{result.title}</span>
+                  <svg className="w-4 h-4 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 py-8 text-center">
+>>>>>>> main
               No results found for &ldquo;{query}&rdquo;
             </div>
           )}

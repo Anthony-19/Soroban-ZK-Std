@@ -5,7 +5,7 @@ version: "minor"
 author: "Miracle656"
 commit: "ffbd41aa573c1eb1f004fb685f213bf0b5da0033"
 closes: ["#18"]
-tags: ["serialization", "bn254", "fr", "fq", "zk-core"]
+tags: ["serialization", "bn254", "fr", "fq", "soroban-zk-core"]
 ---
 
 Implements Issue #18.

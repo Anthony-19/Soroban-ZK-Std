@@ -59,10 +59,10 @@ function SidebarSection({ item }: { item: NavItem }) {
               <li key={child.href}>
                 <Link
                   href={child.href || "#"}
-                  className={`block px-3 py-1.5 text-sm rounded-md transition-all duration-150 border-l-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white ${
+                  className={`block px-3 py-1.5 text-sm transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white ${
                     active
-                      ? "border-black dark:border-white text-black dark:text-white bg-neutral-100 dark:bg-neutral-800/50 font-semibold"
-                      : "border-transparent text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/30 hover:border-neutral-300 dark:hover:border-neutral-600"
+                      ? "text-blue-600 dark:text-blue-400 font-medium"
+                      : "text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white"
                   }`}
                   tabIndex={open ? 0 : -1}
                 >
@@ -118,7 +118,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-16 left-0 z-50 h-[calc(100vh-4rem)] w-72 bg-white dark:bg-neutral-950 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed top-16 left-0 z-50 h-[calc(100vh-4rem)] w-72 bg-white dark:bg-neutral-950 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-16 lg:z-auto ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Sidebar Navigation"

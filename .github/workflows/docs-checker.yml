@@ -119,10 +119,10 @@ jobs:
           echo "=== Checking required project documentation ==="
 
           REQUIRED_DOCS=(
-            "frontend/content/docs/getting-started.mdx"
-            "docs/ASP_Integration.mdx"
-            "docs/cap0075-integration-guide.mdx"
-            "docs/polynomial-operations.mdx"
+            "frontend/content/docs/getting-started/getting-started.mdx"
+            "frontend/content/docs/integration-and-verification/ASP_Integration.mdx"
+            "frontend/content/docs/integration-and-verification/cap0075-integration-guide.mdx"
+            "frontend/content/docs/math-and-cryptography/polynomial-operations.mdx"
             "README.md"
             "BENCHMARK.md"
             "GAS.md"
@@ -141,7 +141,7 @@ jobs:
         run: |
           echo "=== Validating CAP references ==="
 
-          grep -r "CAP-0074\|CAP-0075\|CAP-0080" docs/ frontend/content/docs/ frontend/app/docs/ --include="*.md" --include="*.mdx" -l | while read file; do
+          grep -r "CAP-0074\|CAP-0075\|CAP-0080" frontend/content/docs/ --include="*.md" --include="*.mdx" -l | while read file; do
             echo "Checking CAP refs in: $file"
 
             if grep -q "CAP-0074" "$file"; then
@@ -163,7 +163,7 @@ jobs:
         run: |
           echo "=== Validating ZK documentation standards ==="
 
-          find docs/ frontend/content/docs/ -name "*.md" -o -name "*.mdx" 2>/dev/null | while read file; do
+          find frontend/content/docs/ -name "*.md" -o -name "*.mdx" 2>/dev/null | while read file; do
             if [[ "$file" == *"getting-started"* ]] || [[ "$file" == *"mdx-guide"* ]] || [[ "$file" == *"math-rendering"* ]]; then
               continue
             fi
@@ -191,24 +191,7 @@ jobs:
             echo "✅ Content check passed: $(basename "$file")"
           done
 
-      - name: Check API Reference Completeness
-        run: |
-          echo "=== Checking API documentation pages ==="
 
-          API_PAGES=(
-            "frontend/app/docs/api-reference/page.tsx"
-            "frontend/app/docs/architecture/page.tsx"
-            "frontend/app/docs/cap0075/page.tsx"
-            "frontend/app/docs/polynomial-operations/page.tsx"
-          )
-
-          for page in "${API_PAGES[@]}"; do
-            if [ ! -f "$page" ]; then
-              echo "❌ ERROR: API page missing: $page"
-              exit 1
-            fi
-            echo "✅ Found API page: $page"
-          done
 
       - name: Validate Internal Links & Cross-References
         run: |
@@ -459,7 +442,7 @@ jobs:
           echo "=== Checking spelling in documentation ==="
           cspell --words-file project-words.txt \
             "frontend/content/docs/**/*.mdx" \
-            "docs/**/*.md" \
+            "frontend/content/docs/**/*.md" \
             "README.md" \
             "BENCHMARK.md" \
             "GAS.md" \
@@ -510,8 +493,8 @@ jobs:
         run: |
           echo "=== Checking benchmark docs are current ==="
 
-          if [ -f "BENCHMARK.md" ] && [ -d "crates/zk-core/benches" ]; then
-            bench_files=$(find crates/zk-core/benches -name "*.rs" | wc -l)
+          if [ -f "BENCHMARK.md" ] && [ -d "crates/soroban-zk-core/benches" ]; then
+            bench_files=$(find crates/soroban-zk-core/benches -name "*.rs" | wc -l)
             if [ "$bench_files" -gt 0 ]; then
               if ! grep -q "g1_ops\|instruction_cost\|benchmark" BENCHMARK.md; then
                 echo "⚠️  WARNING: BENCHMARK.md may be out of sync with bench files"

@@ -205,7 +205,7 @@ Use this table to plan multi-operation transactions.
 
 ## Assumptions
 
-1. **No `std` overhead**: `zk-core` is `#![no_std]`.  All operations are
+1. **No `std` overhead**: `soroban-zk-core` is `#![no_std]`.  All operations are
    pure stack-based field arithmetic with no allocations.
 
 2. **Binary-method field multiplication**: `Fq::mul` and `Fr::mul` use a
@@ -235,10 +235,10 @@ Use this table to plan multi-operation transactions.
 
 ```bash
 # From repository root:
-cargo bench -p zk-core
+cargo bench -p soroban-zk-core
 
 # Run a single benchmark group:
-cargo bench -p zk-core -- G1ScalarMul
+cargo bench -p soroban-zk-core -- G1ScalarMul
 
 # Open HTML report:
 open target/criterion/G1Add/report/index.html
@@ -258,9 +258,9 @@ make bench
 
 ```bash
 git stash
-cargo bench -p zk-core -- --save-baseline before
+cargo bench -p soroban-zk-core -- --save-baseline before
 git stash pop
-cargo bench -p zk-core -- --baseline before
+cargo bench -p soroban-zk-core -- --baseline before
 ```
 
 ---
@@ -277,5 +277,5 @@ cargo bench -p zk-core -- --baseline before
 
 ---
 
-*Last updated: 2026-06-01.  Re-run benchmarks after any change to `zk-core`
+*Last updated: 2026-06-01.  Re-run benchmarks after any change to `soroban-zk-core`
 field arithmetic, curve operations, or `zk-soroban` host-function wrappers.*

@@ -5,7 +5,7 @@ version: "minor"
 author: "Miracle656"
 commit: "31792d68c8a9de5ef6a56087fcc7bcbf1b2ef11a"
 closes: ["#16"]
-tags: ["crypto", "bn254", "legendre", "quadratic-residue", "zk-core"]
+tags: ["crypto", "bn254", "legendre", "quadratic-residue", "soroban-zk-core"]
 ---
 
 Implements Issue #16. Legendre Symbol computation over BN254 Fr/Fq,

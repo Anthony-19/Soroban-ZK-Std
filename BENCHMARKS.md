@@ -21,7 +21,7 @@ The Poseidon2 hash implementation utilizes host functions (`hash_to_field`), yie
 | `poseidon2_hash_4` | 4 | 3,024,708 | 0.75% |
 
 ### Core BN254 Arithmetic (Native Implementations)
-Basic mathematical operations implemented natively in `zk-core` (without invoking Soroban host functions) register a base budget cost of 0 in the mock environment native benchmark since native CPU execution bypasses WASM metering. In a deployed contract, these compile to WASM instructions, consuming a minimal subset of the budget.
+Basic mathematical operations implemented natively in `soroban-zk-core` (without invoking Soroban host functions) register a base budget cost of 0 in the mock environment native benchmark since native CPU execution bypasses WASM metering. In a deployed contract, these compile to WASM instructions, consuming a minimal subset of the budget.
 
 | Operation | Measured Cost (Mock) | Status |
 | :--- | :--- | :--- |

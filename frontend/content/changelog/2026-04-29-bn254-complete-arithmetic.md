@@ -5,10 +5,10 @@ version: "minor"
 author: "georgegoldman"
 commit: "a63a47d6b40da1ae9b14ed53ee26dbee7e813372"
 closes: ["#9", "#12", "#17", "#20", "#21"]
-tags: ["crypto", "bn254", "elgamal", "zk-core"]
+tags: ["crypto", "bn254", "elgamal", "soroban-zk-core"]
 ---
 
-Closes #9, #12, #17, #20, #21. Major arithmetic milestone for `zk-core`:
+Closes #9, #12, #17, #20, #21. Major arithmetic milestone for `soroban-zk-core`:
 
 - BN254 base field (`Fq`) and scalar field (`Fr`) arithmetic.
 - `Fr` subtraction with modular underflow protection.

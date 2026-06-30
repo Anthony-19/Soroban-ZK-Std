@@ -1,5 +1,6 @@
 # Soroban-ZK-Std
 **A High-Performance Cryptographic Standard Library for Stellar Protocol 25 ZK-Primitives.**
+*Built by [Neslabs](https://neslabs.io/)*
 
 ## The Unsolved Problem in Stellar ZK
 While Protocol 25 ("X-Ray") introduced native host functions for BN254 pairing checks and Poseidon hashing, a massive **Developer Experience (DX)** gap remains. To build a private stablecoin or compliant RWA protocol on Stellar today, developers face three "Hard Stops":
@@ -39,7 +40,7 @@ zk-soroban = { git = "https://github.com/georgegoldman/Soroban-ZK-Std" }
 Soroban-ZK-Std is a high-performance, no_std cryptographic library optimized specifically for the Stellar network. Because we operate within the strict limits of the Soroban Virtual Machine, our contribution standards are higher than standard Rust projects.
 
 💬 Community
-Join our Telegram group to collaborate with other contributors and get real-time support: https://t.me/+beBHvsplOPVmYmM0
+Join our Telegram group to collaborate with other contributors and get real-time support: https://t.me/SorobanZKStd
 
 ### 🚀 Getting Started
 1. **Prerequisites**
@@ -68,13 +69,13 @@ To keep the library modular, we split the code into three distinct areas:
 
 | Component         | Path                          | Purpose                                                                 |
 |------------------|-------------------------------|-------------------------------------------------------------------------|
-| zk-core          | crates/zk-core/               | Pure Math. Elliptic curve logic, Field arithmetic, and U256 mappings. No Soroban dependencies here. |
+| soroban-zk-core          | crates/soroban-zk-core/               | Pure Math. Elliptic curve logic, Field arithmetic, and U256 mappings. No Soroban dependencies here. |
 | zk-soroban       | crates/zk-soroban/            | Stellar Integration. Traits that extend the Soroban Env, host-function mappings, and XDR conversion. |
 | verifier-sample  | contracts/verifier-sample/    | Integration Tests. A sample contract used to verify WASM size and gas costs. |
 
 **Rule:** 
 
-If you are adding a new mathematical primitive (e.g., a new Curve), it goes in `zk-core`. If you are adding a tool for developers to use in their contracts, it goes in `zk-soroban`.
+If you are adding a new mathematical primitive (e.g., a new Curve), it goes in `soroban-zk-core`. If you are adding a tool for developers to use in their contracts, it goes in `zk-soroban`.
 
 ### 📥 How to Add Your Code
 

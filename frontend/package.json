@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/generate-api-docs.mjs && node scripts/generate-rss.mjs",
+    "prebuild": "node scripts/fetch-github-versions.mjs && node scripts/generate-api-docs.mjs && node scripts/generate-rss.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -27,6 +27,7 @@
     "react-dom": "^18",
     "react-markdown": "^10.1.0",
     "rehype-katex": "^7.0.1",
+    "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "shiki": "^1.6.0"
@@ -49,5 +50,8 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.4.11",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["unrs-resolver"]
   }
 }
